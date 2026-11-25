@@ -319,7 +319,7 @@ export default function InboxPage() {
                                 const personalized = tpl.body
                                   .replace("{{client_name}}", activeConv.leadName)
                                   .replace("{{company_name}}", activeConv.company)
-                                  .replace("{{salesperson}}", "Meenal Shrivastava")
+                                  .replace("{{salesperson}}", "Hasan")
                                   .replace("{{followup_date}}", "tomorrow");
                                 setDraft(personalized);
                                 setShowTemplates(false);

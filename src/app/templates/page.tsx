@@ -57,7 +57,7 @@ export default function TemplatesPage() {
     body
       .replaceAll("{{client_name}}", "Sophia Lindqvist")
       .replaceAll("{{company_name}}", "NordicCloud AB")
-      .replaceAll("{{salesperson}}", "Meenal Shrivastava")
+      .replaceAll("{{salesperson}}", "Hasan")
       .replaceAll("{{product}}", "Wyntro Enterprise")
       .replaceAll("{{followup_date}}", "Nov 26, 2:00 PM");
 

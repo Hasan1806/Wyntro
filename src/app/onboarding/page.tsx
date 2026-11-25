@@ -27,7 +27,7 @@ export default function OnboardingPage() {
   const { setHasCompletedOnboarding } = useCrmStore();
   const [step, setStep] = useState(0);
 
-  const [fullName, setFullName] = useState("Meenal Shrivastava");
+  const [fullName, setFullName] = useState("Hasan");
   const [roleTitle, setRoleTitle] = useState("Head of Revenue");
   const [orgName, setOrgName] = useState("Wyntro Global Sales");
   const [timezone, setTimezone] = useState("UTC+05:30 (Asia/Kolkata)");

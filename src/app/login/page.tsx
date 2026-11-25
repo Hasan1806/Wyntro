@@ -14,7 +14,7 @@ import { toast } from "@/components/ui/toast";
 export default function LoginPage() {
   const router = useRouter();
   const { setDemoAuthenticated } = useCrmStore();
-  const [email, setEmail] = useState("meenal.shrivastava@wyntro.io");
+  const [email, setEmail] = useState("hasan@wyntro.io");
   const [password, setPassword] = useState("WyntroDemo2026!");
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(true);
