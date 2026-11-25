@@ -213,7 +213,7 @@ export default function DashboardPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-[#101828]">
-              Good morning, {currentUser.name.split(" ")[0]}
+              Welcome, {currentUser.name.split(" ")[0]}
             </h1>
             <p className="text-[13px] text-[#667085] mt-0.5">
               {currentOrg.name} •{" "}
