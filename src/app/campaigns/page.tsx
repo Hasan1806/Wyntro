@@ -61,7 +61,7 @@ export default function CampaignsPage() {
       deliveryRate: 0,
       replyRate: 0,
       estimatedCost,
-      createdBy: "Aarav Mehta",
+      createdBy: "Meenal Shrivastava",
       templateId,
       messagePreview: messageBody,
       isSimulated: true,
@@ -279,7 +279,7 @@ export default function CampaignsPage() {
                 {messageBody
                   .replace("{{client_name}}", "Sophia Lindqvist")
                   .replace("{{company_name}}", "NordicCloud AB")
-                  .replace("{{salesperson}}", "Aarav Mehta")
+                  .replace("{{salesperson}}", "Meenal Shrivastava")
                   .replace("{{followup_date}}", "Nov 27")}
               </div>
             </div>

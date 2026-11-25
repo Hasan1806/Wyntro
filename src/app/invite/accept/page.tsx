@@ -16,7 +16,7 @@ export default function InviteAcceptPage() {
   return (
     <AuthShell
       title="Join Wyntro Global Sales"
-      subtitle="Aarav Mehta invited you to collaborate in Wyntro."
+      subtitle="Meenal Shrivastava invited you to collaborate in Wyntro."
     >
       <div className="mb-4 flex items-center justify-between rounded-[8px] border border-[#E4E7EC] bg-[#F8F9FC] px-3 py-2.5">
         <div>

@@ -69,7 +69,7 @@ const BLUEPRINTS: {
       { id: "b3-1", category: "trigger", kind: "form_submitted", label: "Enterprise form submitted", config: { value: "Enterprise Demo Request" } },
       { id: "b3-2", category: "condition", kind: "lead_priority", label: "Priority equals Hot", config: { value: "hot" } },
       { id: "b3-3", category: "action", kind: "add_tag", label: "Add tag: VIP Fast-Track", config: { value: "VIP Fast-Track" }, branch: "yes" },
-      { id: "b3-4", category: "action", kind: "assign_salesperson", label: "Assign to Aarav Mehta", config: { value: "Aarav Mehta" }, branch: "yes" },
+      { id: "b3-4", category: "action", kind: "assign_salesperson", label: "Assign to Meenal Shrivastava", config: { value: "Meenal Shrivastava" }, branch: "yes" },
     ],
   },
   {
