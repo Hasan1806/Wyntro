@@ -16,7 +16,12 @@ export function WyntroLogo({
     size === "sm" ? "text-base" : size === "lg" ? "text-xl" : "text-[17px]";
 
   return (
-    <div className={cn("inline-flex items-center gap-2.5 select-none", className)}>
+    <div
+      className={cn(
+        "inline-flex items-center gap-2.5 select-none whitespace-nowrap shrink-0",
+        className
+      )}
+    >
       <svg
         width={iconDim}
         height={iconDim}

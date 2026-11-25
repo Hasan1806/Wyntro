@@ -46,9 +46,10 @@ export function HomepageShowcase() {
 
       {/* Top Navigation */}
       <header className="sticky top-0 z-40 border-b border-[#E4E7EC]/80 bg-white/85 backdrop-blur-xl">
-        <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-6 lg:px-10">
+        <div className="mx-auto flex h-16 sm:h-[72px] max-w-7xl items-center justify-between gap-2 px-4 sm:px-6 lg:px-10">
           <Link href="/" className="flex items-center shrink-0">
-            <WyntroLogo size="lg" />
+            <WyntroLogo size="md" className="sm:hidden" />
+            <WyntroLogo size="lg" className="hidden sm:inline-flex" />
           </Link>
 
           <nav className="hidden md:flex items-center gap-2 text-[14px] font-medium text-[#475467]">
@@ -70,19 +71,19 @@ export function HomepageShowcase() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <Link
               href="/login"
-              className="rounded-[8px] border border-[#E4E7EC] bg-white px-4 py-2 text-[14px] font-medium text-[#344054] shadow-[0_1px_2px_rgba(16,24,40,0.04)] transition-all hover:border-[#D0D5DD] hover:bg-[#F8F9FC] hover:text-[#0F172A]"
+              className="rounded-[8px] border border-[#E4E7EC] bg-white px-2.5 py-1.5 sm:px-4 sm:py-2 text-[12px] sm:text-[14px] font-medium text-[#344054] shadow-[0_1px_2px_rgba(16,24,40,0.04)] transition-all hover:border-[#D0D5DD] hover:bg-[#F8F9FC] hover:text-[#0F172A] whitespace-nowrap"
             >
               Sign in
             </Link>
             <Link
               href="/dashboard"
-              className="group inline-flex items-center gap-2 rounded-[8px] bg-gradient-to-b from-[#635BFF] to-[#5148E5] px-4.5 py-2 text-[14px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_2px_6px_rgba(99,91,255,0.28)] transition-all hover:from-[#5850EC] hover:to-[#463ED8] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_4px_12px_rgba(99,91,255,0.35)]"
+              className="group inline-flex items-center gap-1.5 sm:gap-2 rounded-[8px] bg-gradient-to-b from-[#635BFF] to-[#5148E5] px-3 py-1.5 sm:px-4.5 sm:py-2 text-[12px] sm:text-[14px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_2px_6px_rgba(99,91,255,0.28)] transition-all hover:from-[#5850EC] hover:to-[#463ED8] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_4px_12px_rgba(99,91,255,0.35)] whitespace-nowrap"
             >
               <span>Open Workspace</span>
-              <ArrowRight className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-0.5" />
+              <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform duration-150 group-hover:translate-x-0.5" />
             </Link>
           </div>
         </div>
@@ -167,13 +168,13 @@ export function HomepageShowcase() {
               className="lg:col-span-6"
             >
               <div className="rounded-[16px] border border-[#E4E7EC] bg-white p-2 shadow-[0_24px_60px_-15px_rgba(15,23,42,0.14)]">
-                <div className="flex items-center justify-between border-b border-[#E4E7EC] px-3 py-2.5">
-                  <div className="flex items-center gap-1.5">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E4E7EC] px-3 py-2.5">
+                  <div className="hidden sm:flex items-center gap-1.5">
                     <span className="h-2.5 w-2.5 rounded-full bg-[#F04438]/70" />
                     <span className="h-2.5 w-2.5 rounded-full bg-[#F79009]/70" />
                     <span className="h-2.5 w-2.5 rounded-full bg-[#12B76A]/70" />
                   </div>
-                  <div className="flex items-center gap-1 rounded-[8px] bg-[#F8F9FC] p-0.5 border border-[#E4E7EC]">
+                  <div className="flex flex-wrap items-center gap-1 rounded-[8px] bg-[#F8F9FC] p-0.5 border border-[#E4E7EC] w-full sm:w-auto justify-center">
                     {PREVIEW_TABS.map((tab) => {
                       const Icon = tab.icon;
                       const active = activeTab === tab.id;
@@ -197,7 +198,7 @@ export function HomepageShowcase() {
 
                 <div className="p-4 bg-[#F8F9FC]/70 rounded-b-[12px] min-h-[320px]">
                   {activeTab === "pipeline" && (
-                    <div className="grid grid-cols-3 gap-2.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                       {[
                         {
                           stage: "Qualified",
@@ -292,7 +293,7 @@ export function HomepageShowcase() {
 
                   {activeTab === "analytics" && (
                     <div className="space-y-3">
-                      <div className="grid grid-cols-3 gap-2.5">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                         {[
                           { label: "Pipeline Value", val: "₹33,50,000", delta: "+18.5%" },
                           { label: "Conversion", val: "24.8%", delta: "+1.9%" },

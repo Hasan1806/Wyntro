@@ -440,26 +440,30 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Main Column */}
       <div className="flex flex-1 flex-col min-w-0">
         {/* Topbar */}
-        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b border-[#E4E7EC] bg-white/95 backdrop-blur-sm px-4 lg:px-6">
-          <div className="flex items-center gap-3 min-w-0">
+        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-2 sm:gap-4 border-b border-[#E4E7EC] bg-white/95 backdrop-blur-sm px-3.5 sm:px-4 lg:px-6">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
             <button
               onClick={() => setMobileOpen(true)}
-              className="lg:hidden rounded-[8px] p-1.5 text-[#667085] hover:bg-[#F2F4F7]"
+              className="lg:hidden rounded-[8px] p-1.5 text-[#667085] hover:bg-[#F2F4F7] shrink-0"
               aria-label="Open menu"
             >
               <Menu className="h-5 w-5" />
             </button>
 
-            <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[13px] min-w-0">
+            <Link href="/dashboard" className="lg:hidden flex items-center shrink-0">
+              <WyntroLogo size="sm" />
+            </Link>
+
+            <nav aria-label="Breadcrumb" className="hidden sm:flex items-center gap-1.5 text-[13px] min-w-0">
               <Link
                 href="/dashboard"
-                className="text-[#667085] hover:text-[#101828] hidden sm:inline"
+                className="text-[#667085] hover:text-[#101828]"
               >
                 Wyntro
               </Link>
               {breadcrumbs.map((crumb, i) => (
                 <React.Fragment key={crumb.href}>
-                  <span className="text-[#D0D5DD] hidden sm:inline">/</span>
+                  <span className="text-[#D0D5DD]">/</span>
                   <Link
                     href={crumb.href}
                     className={cn(
