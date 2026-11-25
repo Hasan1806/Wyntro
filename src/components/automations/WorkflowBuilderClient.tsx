@@ -12,6 +12,8 @@ import {
   Zap,
   GitBranch,
   Cog,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Card } from "@/components/ui/card";
@@ -53,6 +55,7 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
   const [draft, setDraft] = useState(existing);
   const [selectedNodeId, setSelectedNodeId] = useState(existing.nodes[0]?.id ?? "");
   const [testLeadId, setTestLeadId] = useState(leads[0]?.id ?? "");
+  const [traceSteps, setTraceSteps] = useState<string[]>([]);
 
   const hasTrigger = draft.nodes.some((n) => n.category === "trigger");
   const hasAction = draft.nodes.some((n) => n.category === "action");
@@ -71,6 +74,15 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
     };
     setDraft((d) => ({ ...d, nodes: [...d.nodes, node] }));
     setSelectedNodeId(node.id);
+  };
+
+  const moveNode = (index: number, dir: -1 | 1) => {
+    const target = index + dir;
+    if (target < 0 || target >= draft.nodes.length) return;
+    const copy = [...draft.nodes];
+    const [removed] = copy.splice(index, 1);
+    copy.splice(target, 0, removed);
+    setDraft((d) => ({ ...d, nodes: copy }));
   };
 
   const removeNode = (nodeId: string) => {
@@ -93,6 +105,19 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
     toast({ title: "Workflow saved" });
   };
 
+  const handleTest = () => {
+    saveWorkflow(draft);
+    const lead = leads.find((l) => l.id === testLeadId) ?? leads[0];
+    const msg = runWorkflowSimulation(draft.id, testLeadId);
+    setTraceSteps(
+      draft.nodes.map(
+        (n, i) =>
+          `Step ${i + 1} [${n.category.toUpperCase()}]: ${n.label} → OK for ${lead?.name ?? "Lead"}`
+      )
+    );
+    toast({ title: "Simulated Execution", description: msg, variant: "info" });
+  };
+
   return (
     <AppShell>
       <div className="space-y-4">
@@ -111,7 +136,7 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
                 className="font-semibold text-[16px] h-8 border-transparent hover:border-[#E4E7EC] px-1.5"
               />
               <p className="text-[12px] text-[#667085] px-1.5">
-                Visual Node Builder • Deterministic Local Simulator
+                Visual Node Studio • Deterministic Local Simulator
               </p>
             </div>
           </div>
@@ -137,15 +162,7 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
             <Button variant="secondary" size="sm" onClick={handleSave}>
               Save Draft
             </Button>
-            <Button
-              size="sm"
-              disabled={!isValid}
-              onClick={() => {
-                saveWorkflow(draft);
-                const msg = runWorkflowSimulation(draft.id, testLeadId);
-                toast({ title: "Simulated Execution", description: msg, variant: "info" });
-              }}
-            >
+            <Button size="sm" disabled={!isValid} onClick={handleTest}>
               <Play className="h-3.5 w-3.5" />
               Test Workflow
             </Button>
@@ -160,6 +177,7 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+          {/* Palette */}
           <Card className="lg:col-span-3 p-4 space-y-4">
             {(["trigger", "condition", "action"] as const).map((cat) => (
               <div key={cat} className="space-y-1.5">
@@ -180,71 +198,117 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
             ))}
           </Card>
 
-          <div className="lg:col-span-6 space-y-2">
-            {draft.nodes.map((node, idx) => {
-              const Icon =
-                node.category === "trigger"
-                  ? Zap
-                  : node.category === "condition"
-                  ? GitBranch
-                  : Cog;
-              const badgeVar =
-                node.category === "trigger"
-                  ? "primary"
-                  : node.category === "condition"
-                  ? "warning"
-                  : "success";
+          {/* Dotted Studio Canvas */}
+          <div className="lg:col-span-6 rounded-[12px] border border-[#E4E7EC] bg-[#F8F9FC] bg-[radial-gradient(#D0D5DD_1px,transparent_1px)] [background-size:18px_18px] p-6 min-h-[540px]">
+            <div className="max-w-md mx-auto space-y-1">
+              {draft.nodes.map((node, idx) => {
+                const Icon =
+                  node.category === "trigger"
+                    ? Zap
+                    : node.category === "condition"
+                    ? GitBranch
+                    : Cog;
+                const badgeVar =
+                  node.category === "trigger"
+                    ? "primary"
+                    : node.category === "condition"
+                    ? "warning"
+                    : "success";
+                const accentBorder =
+                  node.category === "trigger"
+                    ? "border-l-[#635BFF]"
+                    : node.category === "condition"
+                    ? "border-l-[#F79009]"
+                    : "border-l-[#12B76A]";
 
-              return (
-                <div key={node.id} className="flex flex-col items-center">
-                  <Card
-                    onClick={() => setSelectedNodeId(node.id)}
-                    className={`w-full p-4 cursor-pointer transition-all ${
-                      selectedNodeId === node.id
-                        ? "border-[#635BFF] ring-2 ring-[#635BFF]/15"
-                        : "hover:border-[#D0D5DD]"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2.5">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-[8px] bg-[#F8F9FC] border border-[#E4E7EC]">
-                          <Icon className="h-4 w-4 text-[#635BFF]" />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <Badge variant={badgeVar} className="uppercase text-[10px]">
-                              {node.category}
-                            </Badge>
-                            {node.branch && node.branch !== "all" && (
-                              <Badge variant="outline" className="text-[10px]">
-                                Branch: {node.branch.toUpperCase()}
+                return (
+                  <div key={node.id} className="flex flex-col items-center">
+                    <Card
+                      onClick={() => setSelectedNodeId(node.id)}
+                      className={`w-full p-4 cursor-pointer transition-all border-l-4 ${accentBorder} ${
+                        selectedNodeId === node.id
+                          ? "border-[#635BFF] ring-2 ring-[#635BFF]/15 shadow-md"
+                          : "hover:border-[#D0D5DD]"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-start gap-2.5">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] bg-[#F8F9FC] border border-[#E4E7EC]">
+                            <Icon className="h-4 w-4 text-[#635BFF]" />
+                          </div>
+                          <div>
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              <span className="text-[10px] font-mono text-[#98A2B3]">
+                                #{idx + 1}
+                              </span>
+                              <Badge variant={badgeVar} className="uppercase text-[10px]">
+                                {node.category}
                               </Badge>
+                              {node.branch && node.branch !== "all" && (
+                                <Badge variant="outline" className="text-[10px]">
+                                  Branch: {node.branch.toUpperCase()}
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-[13px] font-semibold text-[#101828] mt-1">
+                              {node.label}
+                            </p>
+                            {Object.values(node.config)[0] && (
+                              <p className="mt-1 inline-block rounded bg-[#F8F9FC] border border-[#E4E7EC] px-2 py-0.5 text-[11px] text-[#667085]">
+                                {Object.values(node.config)[0]}
+                              </p>
                             )}
                           </div>
-                          <p className="text-[13px] font-semibold text-[#101828] mt-1">
-                            {node.label}
-                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-0.5">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              moveNode(idx, -1);
+                            }}
+                            className="p-1 text-[#98A2B3] hover:text-[#101828] cursor-pointer"
+                            title="Move up"
+                          >
+                            <ArrowUp className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              moveNode(idx, 1);
+                            }}
+                            className="p-1 text-[#98A2B3] hover:text-[#101828] cursor-pointer"
+                            title="Move down"
+                          >
+                            <ArrowDown className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeNode(node.id);
+                            }}
+                            className="p-1 text-[#98A2B3] hover:text-[#F04438] cursor-pointer"
+                            title="Delete node"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
                         </div>
                       </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeNode(node.id);
-                        }}
-                        className="p-1 text-[#98A2B3] hover:text-[#F04438] cursor-pointer"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </Card>
-                  {idx < draft.nodes.length - 1 && (
-                    <div className="h-5 w-0.5 bg-[#D0D5DD]" />
-                  )}
-                </div>
-              );
-            })}
+                    </Card>
+                    {idx < draft.nodes.length - 1 && (
+                      <div className="flex flex-col items-center py-0.5">
+                        <div className="h-4 w-0.5 bg-[#CBD5E1]" />
+                        <div className="h-1.5 w-1.5 rounded-full bg-[#635BFF]" />
+                        <div className="h-4 w-0.5 bg-[#CBD5E1]" />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
+          {/* Inspector & Live Trace */}
           <div className="lg:col-span-3 space-y-4">
             <Card className="p-4 space-y-3">
               <p className="text-[12px] font-semibold uppercase tracking-wider text-[#98A2B3]">
@@ -252,19 +316,24 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
               </p>
               {selectedNode ? (
                 <>
-                  <Input
-                    value={selectedNode.label}
-                    onChange={(e) =>
-                      setDraft({
-                        ...draft,
-                        nodes: draft.nodes.map((n) =>
-                          n.id === selectedNode.id
-                            ? { ...n, label: e.target.value }
-                            : n
-                        ),
-                      })
-                    }
-                  />
+                  <div>
+                    <label className="block text-[11px] text-[#667085] mb-1">
+                      Node Label
+                    </label>
+                    <Input
+                      value={selectedNode.label}
+                      onChange={(e) =>
+                        setDraft({
+                          ...draft,
+                          nodes: draft.nodes.map((n) =>
+                            n.id === selectedNode.id
+                              ? { ...n, label: e.target.value }
+                              : n
+                          ),
+                        })
+                      }
+                    />
+                  </div>
                   <div>
                     <label className="block text-[11px] text-[#667085] mb-1">
                       Parameter / Value
@@ -283,6 +352,34 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
                       }
                     />
                   </div>
+                  {selectedNode.category === "action" && (
+                    <div>
+                      <label className="block text-[11px] text-[#667085] mb-1">
+                        Conditional Branch
+                      </label>
+                      <select
+                        value={selectedNode.branch ?? "all"}
+                        onChange={(e) =>
+                          setDraft({
+                            ...draft,
+                            nodes: draft.nodes.map((n) =>
+                              n.id === selectedNode.id
+                                ? {
+                                    ...n,
+                                    branch: e.target.value as "all" | "yes" | "no",
+                                  }
+                                : n
+                            ),
+                          })
+                        }
+                        className="h-9 w-full rounded-[8px] border border-[#E4E7EC] px-2.5 text-[12px]"
+                      >
+                        <option value="all">Always run (All)</option>
+                        <option value="yes">Condition matched (Yes)</option>
+                        <option value="no">Condition failed (No)</option>
+                      </select>
+                    </div>
+                  )}
                 </>
               ) : (
                 <p className="text-[12px] text-[#667085]">Select a node to edit.</p>
@@ -291,7 +388,7 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
 
             <Card className="p-4 space-y-3">
               <p className="text-[12px] font-semibold uppercase tracking-wider text-[#98A2B3]">
-                Test & Execution History
+                Test & Execution Trace
               </p>
               <select
                 value={testLeadId}
@@ -304,7 +401,17 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
                   </option>
                 ))}
               </select>
-              <div className="space-y-2 max-h-60 overflow-y-auto">
+
+              {traceSteps.length > 0 && (
+                <div className="rounded-[8px] border border-[#12B76A]/30 bg-[#ECFDF3] p-2.5 space-y-1 text-[11px] text-[#027A48]">
+                  <p className="font-semibold">Latest Simulation Trace:</p>
+                  {traceSteps.map((s) => (
+                    <p key={s}>{s}</p>
+                  ))}
+                </div>
+              )}
+
+              <div className="space-y-2 max-h-56 overflow-y-auto">
                 {existing.executions.map((ex) => (
                   <div
                     key={ex.id}
