@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useCrmStore } from "@/store/useCrmStore";
+import { uid } from "@/lib/utils";
 import { toast } from "@/components/ui/toast";
 import type { FormFieldConfig, FormFieldType } from "@/types/crm";
 
@@ -51,7 +52,7 @@ export default function FormsBuilderPage() {
 
   const addField = (type: FormFieldType, label: string) => {
     const newField: FormFieldConfig = {
-      id: `f-${Date.now()}`,
+      id: uid("f"),
       type,
       label,
       placeholder: `Enter ${label.toLowerCase()}`,

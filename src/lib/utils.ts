@@ -26,6 +26,14 @@ export function getInitials(name: string): string {
     .join("");
 }
 
+export function uid(prefix: string): string {
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+}
+
+export function nextDayIso(): string {
+  return new Date(Date.now() + 86400000).toISOString();
+}
+
 export function exportToCsv<T extends Record<string, unknown>>(
   filename: string,
   rows: T[],

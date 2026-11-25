@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input, Textarea } from "@/components/ui/input";
 import { toast } from "@/components/ui/toast";
 import { useCrmStore } from "@/store/useCrmStore";
+import { nextDayIso } from "@/lib/utils";
 import type { LeadPriority, LeadSource } from "@/types/crm";
 
 const leadSchema = z.object({
@@ -104,7 +105,7 @@ export function AddLeadDrawer({
       notes: values.notes,
       customFields: {},
       lastContactedAt: null,
-      nextFollowUpAt: new Date(Date.now() + 86400000).toISOString(),
+      nextFollowUpAt: nextDayIso(),
       consentOptIn: true,
     });
 

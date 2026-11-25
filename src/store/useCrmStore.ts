@@ -585,7 +585,7 @@ export const useCrmStore = create<CrmState>()(
         if (!lead) return "Lead not found.";
 
         const enabledRules = state.distributionRules.filter((r) => r.enabled);
-        let matchedRule = enabledRules.find((rule) =>
+        const matchedRule = enabledRules.find((rule) =>
           rule.conditions.every((cond) => {
             if (cond.field === "source") {
               return lead.source.toLowerCase() === cond.value.toLowerCase();

@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { useCrmStore } from "@/store/useCrmStore";
+import { uid } from "@/lib/utils";
 import { toast } from "@/components/ui/toast";
 import type { WorkflowNode, WorkflowNodeCategory } from "@/types/crm";
 
@@ -61,7 +62,7 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
 
   const addNode = (item: (typeof NODE_CATALOG)[number]) => {
     const node: WorkflowNode = {
-      id: `n-${Date.now()}`,
+      id: uid("n"),
       category: item.category,
       kind: item.kind,
       label: item.label,
