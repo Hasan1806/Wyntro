@@ -46,7 +46,7 @@ export default function CampaignsPage() {
   const [scheduledAt, setScheduledAt] = useState("2026-11-27T10:00");
 
   const optedInCount = Math.round(audienceCount * 0.92);
-  const estimatedCost = Number((optedInCount * (channel === "email" ? 0.01 : 0.08)).toFixed(2));
+  const estimatedCost = Number((optedInCount * (channel === "email" ? 0.5 : 4.5)).toFixed(2));
 
   const handleLaunch = () => {
     addCampaign({
@@ -236,7 +236,7 @@ export default function CampaignsPage() {
                   Eligible opted-in contacts: <strong className="tabular-nums">{optedInCount}</strong>
                 </p>
                 <p className="text-[#667085]">
-                  Estimated simulated cost: <strong className="tabular-nums">${estimatedCost}</strong>
+                  Estimated simulated cost: <strong className="tabular-nums">₹{estimatedCost}</strong>
                 </p>
               </Card>
             </div>

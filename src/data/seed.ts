@@ -23,14 +23,14 @@ export const SEED_ORGS: Organization[] = [
     name: "Wyntro Global Sales",
     industry: "B2B SaaS & Enterprise",
     plan: "Enterprise",
-    currency: "USD",
+    currency: "INR",
   },
   {
     id: "org-2",
     name: "Wyntro APAC Operations",
     industry: "Commercial Real Estate",
     plan: "Growth",
-    currency: "USD",
+    currency: "INR",
   },
 ];
 
@@ -463,7 +463,7 @@ export const SEED_ACTIVITIES: ActivityItem[] = [
     leadId: "lead-102",
     type: "email_activity",
     title: "Sent Q4 Enterprise Proposal",
-    description: "Simulated email logged with attached PDF quotation ($32,500/yr).",
+    description: "Simulated email logged with attached PDF quotation (₹3,25,000/yr).",
     actorId: "tm-3",
     actorName: "Marcus Vance",
     createdAt: "2026-11-23T18:10:00Z",

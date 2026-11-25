@@ -181,7 +181,7 @@ export default function AnalyticsPage() {
             <p className="mt-1 text-[28px] font-semibold tabular-nums text-[#101828]">
               {formatCurrency(totalRevenue)}
             </p>
-            <p className="text-[11px] text-[#667085] mt-1">Est. CPL: $24.50 (Demo)</p>
+            <p className="text-[11px] text-[#667085] mt-1">Est. CPL: ₹1,950 (Demo)</p>
           </Card>
         </div>
 
@@ -225,7 +225,7 @@ export default function AnalyticsPage() {
                   <BarChart data={sourceChart}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#E4E7EC" vertical={false} />
                     <XAxis dataKey="source" tick={{ fontSize: 12 }} />
-                    <YAxis tickFormatter={(v) => `$${Math.round(v / 1000)}k`} tick={{ fontSize: 12 }} />
+                    <YAxis tickFormatter={(v) => `₹${Math.round(v / 1000)}k`} tick={{ fontSize: 12 }} />
                     <Tooltip formatter={(v) => formatCurrency(Number(v))} />
                     <Bar dataKey="value" fill="#2E90FA" radius={[6, 6, 0, 0]} />
                   </BarChart>
@@ -294,7 +294,7 @@ export default function AnalyticsPage() {
                   <BarChart data={team}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#E4E7EC" vertical={false} />
                     <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                    <YAxis tickFormatter={(v) => `$${Math.round(v / 1000)}k`} tick={{ fontSize: 12 }} />
+                    <YAxis tickFormatter={(v) => `₹${Math.round(v / 1000)}k`} tick={{ fontSize: 12 }} />
                     <Tooltip formatter={(v) => formatCurrency(Number(v))} />
                     <Bar dataKey="revenueWon" fill="#635BFF" radius={[6, 6, 0, 0]} />
                   </BarChart>

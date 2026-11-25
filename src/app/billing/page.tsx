@@ -42,7 +42,7 @@ export default function BillingPage() {
           </div>
           <div className="text-left sm:text-right">
             <p className="text-[28px] font-semibold text-[#101828] tabular-nums">
-              $79<span className="text-[13px] font-normal text-[#667085]">/seat/mo</span>
+              ₹6,499<span className="text-[13px] font-normal text-[#667085]">/seat/mo</span>
             </p>
             <Button
               size="sm"

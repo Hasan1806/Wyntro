@@ -202,27 +202,27 @@ export function HomepageShowcase() {
                         {
                           stage: "Qualified",
                           color: "#F79009",
-                          val: "$78k",
+                          val: "₹7.2L",
                           cards: [
-                            { name: "Sophia Lindqvist", co: "NordicCloud AB", amt: "$48,000" },
-                            { name: "Ananya Deshmukh", co: "Meridian Prop.", amt: "$24,000" },
+                            { name: "Sophia Lindqvist", co: "NordicCloud AB", amt: "₹4,80,000" },
+                            { name: "Ananya Deshmukh", co: "Meridian Prop.", amt: "₹2,40,000" },
                           ],
                         },
                         {
                           stage: "Proposal Sent",
                           color: "#EC4899",
-                          val: "$68.5k",
+                          val: "₹6.85L",
                           cards: [
-                            { name: "Daniel K. Thorne", co: "Veridian Labs", amt: "$32,500" },
-                            { name: "Rohan Kapoor", co: "Velox Logistics", amt: "$36,000" },
+                            { name: "Daniel K. Thorne", co: "Veridian Labs", amt: "₹3,25,000" },
+                            { name: "Rohan Kapoor", co: "Velox Logistics", amt: "₹3,60,000" },
                           ],
                         },
                         {
                           stage: "Closed Won",
                           color: "#12B76A",
-                          val: "$64k",
+                          val: "₹6.4L",
                           cards: [
-                            { name: "Kenji Takahashi", co: "Apex FinTech", amt: "$64,000" },
+                            { name: "Kenji Takahashi", co: "Apex FinTech", amt: "₹6,40,000" },
                           ],
                         },
                       ].map((col) => (
@@ -294,7 +294,7 @@ export function HomepageShowcase() {
                     <div className="space-y-3">
                       <div className="grid grid-cols-3 gap-2.5">
                         {[
-                          { label: "Pipeline Value", val: "$335,000", delta: "+18.5%" },
+                          { label: "Pipeline Value", val: "₹33,50,000", delta: "+18.5%" },
                           { label: "Conversion", val: "24.8%", delta: "+1.9%" },
                           { label: "Avg Response", val: "9m", delta: "-22%" },
                         ].map((k) => (

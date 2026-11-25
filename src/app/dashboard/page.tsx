@@ -419,7 +419,7 @@ export default function DashboardPage() {
                     tick={{ fontSize: 11, fill: "#667085" }}
                     axisLine={false}
                     tickLine={false}
-                    tickFormatter={(v) => `$${Math.round(v / 1000)}k`}
+                    tickFormatter={(v) => `₹${Math.round(v / 1000)}k`}
                   />
                   <Tooltip
                     formatter={(val) => formatCurrency(Number(val))}

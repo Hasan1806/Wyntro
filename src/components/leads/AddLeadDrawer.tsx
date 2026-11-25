@@ -240,7 +240,7 @@ export function AddLeadDrawer({
             </div>
             <div>
               <label className="block text-[12px] font-medium text-[#344054] mb-1">
-                Est. Value ($)
+                Est. Value (₹)
               </label>
               <Input type="number" {...register("estimatedValue")} />
             </div>
