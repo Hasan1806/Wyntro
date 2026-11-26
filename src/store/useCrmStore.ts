@@ -732,24 +732,11 @@ export const useCrmStore = create<CrmState>()(
         }),
     }),
     {
-      name: "wyntro-crm-demo-v3",
+      name: "wyntro-crm-demo-v4",
       partialize: (state) => ({
         sidebarCollapsed: state.sidebarCollapsed,
         currentOrgId: state.currentOrgId,
         viewRole: state.viewRole,
-        leads: state.leads,
-        activities: state.activities,
-        followUps: state.followUps,
-        conversations: state.conversations,
-        templates: state.templates,
-        campaigns: state.campaigns,
-        contentItems: state.contentItems,
-        forms: state.forms,
-        workflows: state.workflows,
-        distributionRules: state.distributionRules,
-        sequences: state.sequences,
-        integrations: state.integrations,
-        team: state.team,
       }),
     }
   )
