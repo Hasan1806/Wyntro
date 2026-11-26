@@ -12,10 +12,10 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/ui/page-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useCrmStore } from "@/store/useCrmStore";
@@ -107,45 +107,38 @@ export default function FormsBuilderPage() {
   return (
     <AppShell>
       <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-[#101828]">
-              Lead Form Builder
-            </h1>
-            <p className="text-[13px] text-[#667085]">
-              {activeForm.name} • {activeForm.submissions} submissions ({activeForm.conversionRate}% conv)
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="inline-flex rounded-[8px] border border-[#E4E7EC] bg-white p-0.5">
+        <PageHeader
+          title="Lead Form Builder"
+          description={`${activeForm.name} · ${activeForm.submissions} submissions (${activeForm.conversionRate}% conv)`}
+          actions={
+            <div className="inline-flex rounded-[6px] border border-[#E4E4E7] bg-[#F7F7F8] p-0.5">
               <button
                 onClick={() => setDevice("desktop")}
-                className={`rounded-[6px] px-2.5 py-1 text-[12px] flex items-center gap-1 cursor-pointer ${
-                  device === "desktop" ? "bg-[#EFEDFF] text-[#635BFF]" : "text-[#667085]"
+                className={`rounded-[4px] px-2.5 py-1 text-[12px] font-medium flex items-center gap-1 cursor-pointer ${
+                  device === "desktop"
+                    ? "bg-white text-[#18181B] shadow-[0_1px_2px_rgba(24,24,27,0.06)]"
+                    : "text-[#71717A]"
                 }`}
               >
                 <Monitor className="h-3.5 w-3.5" /> Desktop
               </button>
               <button
                 onClick={() => setDevice("mobile")}
-                className={`rounded-[6px] px-2.5 py-1 text-[12px] flex items-center gap-1 cursor-pointer ${
-                  device === "mobile" ? "bg-[#EFEDFF] text-[#635BFF]" : "text-[#667085]"
+                className={`rounded-[4px] px-2.5 py-1 text-[12px] font-medium flex items-center gap-1 cursor-pointer ${
+                  device === "mobile"
+                    ? "bg-white text-[#18181B] shadow-[0_1px_2px_rgba(24,24,27,0.06)]"
+                    : "text-[#71717A]"
                 }`}
               >
                 <Smartphone className="h-3.5 w-3.5" /> Mobile
               </button>
             </div>
-            <Badge variant="outline">
-              Simulated Public Link: demo.wyntro.local/f/{activeForm.id}
-            </Badge>
-          </div>
-        </div>
+          }
+        />
 
-        {/* 3-Panel Builder */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-          {/* LEFT: Field Components */}
-          <Card className="lg:col-span-3 p-4 space-y-3">
-            <p className="text-[12px] font-semibold uppercase tracking-wider text-[#98A2B3]">
+          <Card className="lg:col-span-3 p-4 space-y-2.5">
+            <p className="text-[11px] font-medium text-[#71717A]">
               Field Components
             </p>
             <div className="grid grid-cols-2 lg:grid-cols-1 gap-1.5">
@@ -153,16 +146,15 @@ export default function FormsBuilderPage() {
                 <button
                   key={item.type}
                   onClick={() => addField(item.type, item.label)}
-                  className="flex items-center justify-between rounded-[8px] border border-[#E4E7EC] px-3 py-2 text-[12px] font-medium text-[#344054] hover:border-[#635BFF] hover:bg-[#EFEDFF]/40 cursor-pointer"
+                  className="flex items-center justify-between rounded-[6px] border border-[#E4E4E7] px-2.5 py-1.5 text-[12px] font-medium text-[#18181B] hover:bg-[#F7F7F8] hover:border-[#D4D4D8] cursor-pointer"
                 >
                   <span>{item.label}</span>
-                  <Plus className="h-3.5 w-3.5 text-[#635BFF]" />
+                  <Plus className="h-3.5 w-3.5 text-[#71717A]" />
                 </button>
               ))}
             </div>
           </Card>
 
-          {/* CENTER: Form Canvas & Live Demo Preview */}
           <div className="lg:col-span-6 flex justify-center">
             <Card
               className={`p-6 transition-all w-full ${
@@ -170,20 +162,20 @@ export default function FormsBuilderPage() {
               }`}
             >
               <div
-                className="h-1.5 w-16 rounded-full mb-4"
+                className="h-1 w-12 rounded-full mb-4"
                 style={{ backgroundColor: activeForm.brandColor }}
               />
-              <h2 className="text-[18px] font-semibold text-[#101828]">
+              <h2 className="text-[16px] font-semibold text-[#18181B]">
                 {activeForm.name}
               </h2>
-              <p className="text-[12px] text-[#667085] mt-0.5 mb-5">
+              <p className="text-[12px] text-[#71717A] mt-0.5 mb-5">
                 {activeForm.description}
               </p>
 
               {submitted ? (
-                <div className="rounded-[10px] border border-[#12B76A]/30 bg-[#ECFDF3] p-5 text-center space-y-2">
-                  <CheckCircle2 className="h-8 w-8 text-[#12B76A] mx-auto" />
-                  <p className="text-[13px] font-medium text-[#027A48]">
+                <div className="rounded-[6px] border border-[#E4E4E7] bg-[#F0FDF4] p-5 text-center space-y-2">
+                  <CheckCircle2 className="h-6 w-6 text-[#16A34A] mx-auto" />
+                  <p className="text-[13px] font-medium text-[#15803D]">
                     {activeForm.successMessage}
                   </p>
                   <Button
@@ -200,46 +192,49 @@ export default function FormsBuilderPage() {
                     <div
                       key={field.id}
                       onClick={() => setSelectedFieldId(field.id)}
-                      className={`rounded-[8px] border p-3 transition-colors cursor-pointer ${
+                      className={`rounded-[6px] border p-3 transition-colors cursor-pointer ${
                         selectedFieldId === field.id
-                          ? "border-[#635BFF] bg-[#EFEDFF]/25"
-                          : "border-[#E4E7EC] hover:border-[#D0D5DD]"
+                          ? "border-[#635BFF] bg-[#EFEDFF]/20"
+                          : "border-[#E4E4E7] hover:border-[#D4D4D8]"
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1.5">
-                        <label className="text-[12px] font-medium text-[#344054]">
-                          {field.label} {field.required && <span className="text-[#F04438]">*</span>}
+                        <label className="text-[12px] font-medium text-[#18181B]">
+                          {field.label} {field.required && <span className="text-[#DC2626]">*</span>}
                         </label>
                         <div className="flex items-center gap-1">
                           <button
                             type="button"
+                            aria-label="Move up"
                             onClick={(e) => {
                               e.stopPropagation();
                               moveField(idx, -1);
                             }}
-                            className="p-0.5 text-[#98A2B3] hover:text-[#101828]"
+                            className="p-0.5 text-[#A1A1AA] hover:text-[#18181B]"
                           >
                             <ArrowUp className="h-3 w-3" />
                           </button>
                           <button
                             type="button"
+                            aria-label="Move down"
                             onClick={(e) => {
                               e.stopPropagation();
                               moveField(idx, 1);
                             }}
-                            className="p-0.5 text-[#98A2B3] hover:text-[#101828]"
+                            className="p-0.5 text-[#A1A1AA] hover:text-[#18181B]"
                           >
                             <ArrowDown className="h-3 w-3" />
                           </button>
                           <button
                             type="button"
+                            aria-label="Delete field"
                             onClick={(e) => {
                               e.stopPropagation();
                               updateForm(activeForm.id, {
                                 fields: activeForm.fields.filter((f) => f.id !== field.id),
                               });
                             }}
-                            className="p-0.5 text-[#98A2B3] hover:text-[#F04438]"
+                            className="p-0.5 text-[#A1A1AA] hover:text-[#DC2626]"
                           >
                             <Trash2 className="h-3 w-3" />
                           </button>
@@ -247,13 +242,13 @@ export default function FormsBuilderPage() {
                       </div>
 
                       {field.type === "dropdown" ? (
-                        <select className="h-9 w-full rounded-[8px] border border-[#E4E7EC] bg-white px-2.5 text-[13px]">
+                        <select className="h-[38px] w-full rounded-[6px] border border-[#E4E4E7] bg-white px-2.5 text-[13px]">
                           {(field.options ?? ["Option 1"]).map((o) => (
                             <option key={o}>{o}</option>
                           ))}
                         </select>
                       ) : field.type === "consent" || field.type === "checkbox" ? (
-                        <div className="flex items-center gap-2 text-[12px] text-[#667085]">
+                        <div className="flex items-center gap-2 text-[12px] text-[#52525B]">
                           <Checkbox defaultChecked={field.type === "consent"} />
                           <span>Confirmed</span>
                         </div>
@@ -276,23 +271,22 @@ export default function FormsBuilderPage() {
                     className="w-full"
                     style={{ backgroundColor: activeForm.brandColor }}
                   >
-                    Submit Demo Form (Creates Real Lead)
+                    Submit Demo Form (Creates Lead)
                   </Button>
                 </form>
               )}
             </Card>
           </div>
 
-          {/* RIGHT: Field & Form Settings */}
           <Card className="lg:col-span-3 p-4 space-y-4">
             <div>
-              <p className="text-[12px] font-semibold uppercase tracking-wider text-[#98A2B3]">
-                Selected Field Settings
+              <p className="text-[11px] font-medium text-[#71717A]">
+                Field Settings
               </p>
               {selectedField ? (
                 <div className="mt-3 space-y-3">
                   <div>
-                    <label className="block text-[11px] font-medium text-[#667085] mb-1">
+                    <label className="block text-[12px] font-medium text-[#18181B] mb-1">
                       Label
                     </label>
                     <Input
@@ -303,7 +297,7 @@ export default function FormsBuilderPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-medium text-[#667085] mb-1">
+                    <label className="block text-[12px] font-medium text-[#18181B] mb-1">
                       Placeholder
                     </label>
                     <Input
@@ -314,7 +308,7 @@ export default function FormsBuilderPage() {
                     />
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[12px] text-[#344054]">Required field</span>
+                    <span className="text-[12px] text-[#52525B]">Required</span>
                     <Switch
                       checked={selectedField.required}
                       onCheckedChange={(v) => updateSelectedField({ required: v })}
@@ -322,19 +316,19 @@ export default function FormsBuilderPage() {
                   </div>
                 </div>
               ) : (
-                <p className="mt-2 text-[12px] text-[#667085]">
+                <p className="mt-2 text-[12px] text-[#71717A]">
                   Click a field in the canvas to edit it.
                 </p>
               )}
             </div>
 
-            <div className="border-t border-[#E4E7EC] pt-4 space-y-3">
-              <p className="text-[12px] font-semibold uppercase tracking-wider text-[#98A2B3]">
-                Form Branding & QR (Simulated)
+            <div className="border-t border-[#E4E4E7] pt-4 space-y-3">
+              <p className="text-[11px] font-medium text-[#71717A]">
+                Branding & Share (Simulated)
               </p>
               <div>
-                <label className="block text-[11px] font-medium text-[#667085] mb-1">
-                  Brand Accent Color
+                <label className="block text-[12px] font-medium text-[#18181B] mb-1">
+                  Accent Color
                 </label>
                 <Input
                   type="color"
@@ -346,7 +340,7 @@ export default function FormsBuilderPage() {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[12px] text-[#344054]">Multi-step mode</span>
+                <span className="text-[12px] text-[#52525B]">Multi-step mode</span>
                 <Switch
                   checked={activeForm.isMultiStep}
                   onCheckedChange={(v) =>
@@ -354,11 +348,11 @@ export default function FormsBuilderPage() {
                   }
                 />
               </div>
-              <div className="rounded-[8px] border border-[#E4E7EC] bg-[#F8F9FC] p-3 flex items-center gap-3">
-                <QrCode className="h-10 w-10 text-[#101828] shrink-0" />
-                <div className="text-[11px] text-[#667085]">
-                  <p className="font-medium text-[#101828]">Simulated QR Code</p>
-                  <p>Shareable demo form link ready</p>
+              <div className="rounded-[6px] border border-[#E4E4E7] bg-[#F7F7F8] p-2.5 flex items-center gap-2.5">
+                <QrCode className="h-8 w-8 text-[#18181B] shrink-0" />
+                <div className="text-[11px] text-[#52525B] min-w-0">
+                  <p className="font-medium text-[#18181B]">Simulated Public Link</p>
+                  <p className="truncate">demo.wyntro.local/f/{activeForm.id}</p>
                 </div>
               </div>
             </div>

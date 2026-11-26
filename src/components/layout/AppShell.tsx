@@ -27,18 +27,16 @@ import {
   Search,
   Bell,
   Plus,
-  ChevronLeft,
-  ChevronRight,
+  PanelLeftClose,
+  PanelLeftOpen,
   ChevronDown,
   Building2,
   LogOut,
   Menu,
   X,
-  Sparkles,
 } from "lucide-react";
 import { WyntroLogo } from "@/components/brand/WyntroLogo";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -111,7 +109,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const navGroups: NavGroup[] = useMemo(
     () => [
       {
-        title: "WORKSPACE",
+        title: "Workspace",
         items: [
           { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
           { label: "Leads", href: "/leads", icon: Users, badge: leads.length },
@@ -123,7 +121,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         ],
       },
       {
-        title: "ENGAGEMENT",
+        title: "Engagement",
         items: [
           { label: "Campaigns", href: "/campaigns", icon: Megaphone },
           { label: "Message Templates", href: "/templates", icon: FileText },
@@ -132,7 +130,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         ],
       },
       {
-        title: "AUTOMATION",
+        title: "Automation",
         items: [
           { label: "Workflows", href: "/automations", icon: Workflow },
           { label: "Lead Distribution", href: "/lead-distribution", icon: GitFork },
@@ -140,7 +138,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         ],
       },
       {
-        title: "MANAGEMENT",
+        title: "Management",
         items: [
           { label: "Analytics", href: "/analytics", icon: BarChart3 },
           { label: "Team", href: "/team", icon: UserCog },
@@ -148,7 +146,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         ],
       },
       {
-        title: "SYSTEM",
+        title: "System",
         items: [
           { label: "Settings", href: "/settings", icon: Settings },
           { label: "Billing", href: "/billing", icon: CreditCard },
@@ -195,29 +193,30 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const SidebarContent = (isMobile = false) => {
     const collapsed = isMobile ? false : sidebarCollapsed;
     return (
-      <div className="flex h-full flex-col bg-white border-r border-[#E4E7EC]">
-        {/* Brand + collapse toggle */}
-        <div className="flex h-16 items-center justify-between px-4 border-b border-[#E4E7EC]">
+      <div className="flex h-full flex-col bg-[#FFFFFF] border-r border-[#E4E4E7]">
+        {/* Brand + Collapse */}
+        <div className="flex h-14 items-center justify-between px-3.5 border-b border-[#E4E4E7]">
           <Link href="/dashboard" className="flex items-center">
-            <WyntroLogo collapsed={collapsed} size="md" />
+            <WyntroLogo collapsed={collapsed} size="sm" />
           </Link>
-          {!isMobile && (
+          {!isMobile ? (
             <button
               onClick={toggleSidebar}
-              className="rounded-[6px] p-1.5 text-[#667085] hover:bg-[#F2F4F7] hover:text-[#101828] cursor-pointer"
+              className="rounded-[6px] p-1 text-[#71717A] hover:bg-[#F4F4F5] hover:text-[#18181B] transition-colors cursor-pointer"
               title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               {collapsed ? (
-                <ChevronRight className="h-4 w-4" />
+                <PanelLeftOpen className="h-4 w-4 stroke-[1.6]" />
               ) : (
-                <ChevronLeft className="h-4 w-4" />
+                <PanelLeftClose className="h-4 w-4 stroke-[1.6]" />
               )}
             </button>
-          )}
-          {isMobile && (
+          ) : (
             <button
               onClick={() => setMobileOpen(false)}
-              className="rounded-[6px] p-1.5 text-[#667085] hover:bg-[#F2F4F7]"
+              className="rounded-[6px] p-1 text-[#71717A] hover:bg-[#F4F4F5]"
+              aria-label="Close navigation"
             >
               <X className="h-4 w-4" />
             </button>
@@ -225,35 +224,32 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Organisation Switcher + Search Trigger */}
-        <div className="p-3 space-y-2 border-b border-[#E4E7EC]">
+        <div className="p-2.5 space-y-1.5 border-b border-[#E4E4E7]">
           <div className="relative">
             <button
               onClick={() => setOrgMenuOpen((o) => !o)}
               className={cn(
-                "flex w-full items-center gap-2.5 rounded-[8px] border border-[#E4E7EC] bg-[#F8F9FC] px-2.5 py-2 text-left hover:bg-[#F2F4F7] transition-colors cursor-pointer",
+                "flex w-full items-center gap-2 rounded-[6px] px-2 py-1.5 text-left hover:bg-[#F4F4F5] transition-colors cursor-pointer",
                 collapsed && "justify-center px-0"
               )}
             >
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[6px] bg-[#EFEDFF] text-[#635BFF]">
-                <Building2 className="h-3.5 w-3.5" />
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[5px] bg-[#F4F4F5] text-[#52525B]">
+                <Building2 className="h-3.5 w-3.5 stroke-[1.6]" />
               </div>
               {!collapsed && (
                 <>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[12px] font-medium text-[#101828]">
+                    <p className="truncate text-[12px] font-medium text-[#18181B]">
                       {currentOrg.name}
                     </p>
-                    <p className="truncate text-[11px] text-[#667085]">
-                      {currentOrg.plan} Workspace
-                    </p>
                   </div>
-                  <ChevronDown className="h-3.5 w-3.5 text-[#98A2B3]" />
+                  <ChevronDown className="h-3.5 w-3.5 text-[#A1A1AA]" />
                 </>
               )}
             </button>
 
             {orgMenuOpen && !collapsed && (
-              <div className="absolute left-0 right-0 top-full z-40 mt-1 rounded-[8px] border border-[#E4E7EC] bg-white p-1 shadow-lg">
+              <div className="absolute left-0 right-0 top-full z-40 mt-1 rounded-[8px] border border-[#E4E4E7] bg-white p-1 shadow-[0_8px_24px_-4px_rgba(24,24,27,0.12)]">
                 {organizations.map((org) => (
                   <button
                     key={org.id}
@@ -262,12 +258,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       setOrgMenuOpen(false);
                     }}
                     className={cn(
-                      "flex w-full items-center justify-between rounded-[6px] px-2.5 py-2 text-left text-[12px] hover:bg-[#F8F9FC] cursor-pointer",
-                      org.id === currentOrgId && "bg-[#EFEDFF] text-[#635BFF] font-medium"
+                      "flex w-full items-center justify-between rounded-[6px] px-2.5 py-1.5 text-left text-[12px] hover:bg-[#F4F4F5] cursor-pointer",
+                      org.id === currentOrgId && "bg-[#F4F4F5] text-[#18181B] font-medium"
                     )}
                   >
                     <span className="truncate">{org.name}</span>
-                    <span className="text-[10px] text-[#98A2B3]">{org.plan}</span>
+                    <span className="text-[11px] text-[#71717A]">{org.plan}</span>
                   </button>
                 ))}
               </div>
@@ -277,15 +273,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <button
             onClick={() => setSearchOpen(true)}
             className={cn(
-              "flex w-full items-center gap-2 rounded-[8px] border border-[#E4E7EC] bg-white px-2.5 py-1.5 text-[12px] text-[#667085] hover:border-[#D0D5DD] hover:text-[#101828] transition-colors cursor-pointer",
+              "flex w-full h-8 items-center gap-2 rounded-[6px] border border-[#E4E4E7] bg-[#F7F7F8] px-2.5 text-[12px] text-[#71717A] hover:border-[#D4D4D8] hover:text-[#18181B] transition-colors cursor-pointer",
               collapsed && "justify-center px-0"
             )}
           >
-            <Search className="h-3.5 w-3.5 shrink-0 text-[#98A2B3]" />
+            <Search className="h-3.5 w-3.5 shrink-0 text-[#A1A1AA] stroke-[1.6]" />
             {!collapsed && (
               <>
-                <span className="flex-1 text-left">Quick search...</span>
-                <kbd className="rounded border border-[#E4E7EC] bg-[#F8F9FC] px-1.5 py-0.5 text-[10px] font-mono text-[#667085]">
+                <span className="flex-1 text-left">Search...</span>
+                <kbd className="rounded-[4px] border border-[#E4E4E7] bg-white px-1.5 py-0.5 text-[10px] font-mono text-[#71717A]">
                   ⌘K
                 </kbd>
               </>
@@ -294,7 +290,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Navigation Groups */}
-        <nav className="flex-1 overflow-y-auto px-2.5 py-3 space-y-4">
+        <nav className="flex-1 overflow-y-auto px-2 py-2.5 space-y-3.5">
           {navGroups.map((group) => {
             const isGroupCollapsed = collapsedGroups[group.title];
             return (
@@ -302,12 +298,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 {!collapsed && (
                   <button
                     onClick={() => toggleGroup(group.title)}
-                    className="flex w-full items-center justify-between px-2 pb-1.5 text-[11px] font-semibold tracking-wider text-[#98A2B3] hover:text-[#667085] cursor-pointer"
+                    className="flex w-full items-center justify-between px-2 pb-1 text-[11px] font-medium text-[#A1A1AA] hover:text-[#71717A] cursor-pointer"
                   >
                     <span>{group.title}</span>
                     <ChevronDown
                       className={cn(
-                        "h-3 w-3 transition-transform",
+                        "h-3 w-3 transition-transform duration-150",
                         isGroupCollapsed && "-rotate-90"
                       )}
                     />
@@ -328,22 +324,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                           onClick={() => setMobileOpen(false)}
                           title={collapsed ? item.label : undefined}
                           className={cn(
-                            "group relative flex items-center gap-2.5 rounded-[8px] px-2.5 py-2 text-[13px] transition-colors",
+                            "group flex h-[34px] items-center gap-2.5 rounded-[6px] px-2.5 text-[13px] leading-[20px] font-medium transition-colors duration-100",
                             active
-                              ? "bg-[#EFEDFF] text-[#635BFF] font-medium"
-                              : "text-[#475467] hover:bg-[#F8F9FC] hover:text-[#101828]",
+                              ? "bg-[#F4F4F5] text-[#18181B]"
+                              : "text-[#52525B] hover:bg-[#F7F7F8] hover:text-[#18181B]",
                             collapsed && "justify-center px-0"
                           )}
                         >
-                          {active && (
-                            <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-[#635BFF]" />
-                          )}
                           <Icon
                             className={cn(
-                              "h-4 w-4 shrink-0",
+                              "h-4 w-4 shrink-0 stroke-[1.6]",
                               active
                                 ? "text-[#635BFF]"
-                                : "text-[#667085] group-hover:text-[#101828]"
+                                : "text-[#71717A] group-hover:text-[#18181B]"
                             )}
                           />
                           {!collapsed && (
@@ -352,10 +345,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                               {item.badge !== undefined && (
                                 <span
                                   className={cn(
-                                    "rounded-full px-1.5 py-0.5 text-[11px] font-medium tabular-nums",
-                                    active
-                                      ? "bg-white/80 text-[#635BFF]"
-                                      : "bg-[#F2F4F7] text-[#667085]"
+                                    "text-[11px] font-medium tabular-nums",
+                                    active ? "text-[#18181B]" : "text-[#A1A1AA]"
                                   )}
                                 >
                                   {item.badge}
@@ -374,26 +365,26 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* User Profile Footer */}
-        <div className="border-t border-[#E4E7EC] p-3">
+        <div className="border-t border-[#E4E4E7] p-2.5">
           <div
             className={cn(
-              "flex items-center gap-2.5 rounded-[8px] p-1.5",
+              "flex items-center gap-2.5 rounded-[6px] px-1.5 py-1",
               collapsed && "justify-center"
             )}
           >
             <div
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[12px] font-semibold text-white"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-medium text-white"
               style={{ backgroundColor: currentUser.avatarColor }}
             >
               {getInitials(currentUser.name)}
             </div>
             {!collapsed && (
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[13px] font-medium text-[#101828]">
+                <p className="truncate text-[13px] font-medium text-[#18181B]">
                   {currentUser.name}
                 </p>
-                <p className="truncate text-[11px] text-[#667085]">
-                  {viewRole === "admin" ? "Admin View" : "Sales Rep View"}
+                <p className="truncate text-[11px] text-[#71717A]">
+                  {viewRole === "admin" ? "Admin" : "Sales Rep"}
                 </p>
               </div>
             )}
@@ -401,9 +392,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Link
                 href="/login"
                 title="Switch / Sign out (Demo)"
-                className="rounded-[6px] p-1.5 text-[#98A2B3] hover:bg-[#F2F4F7] hover:text-[#101828]"
+                aria-label="Sign out"
+                className="rounded-[6px] p-1 text-[#71717A] hover:bg-[#F4F4F5] hover:text-[#18181B]"
               >
-                <LogOut className="h-3.5 w-3.5" />
+                <LogOut className="h-3.5 w-3.5 stroke-[1.6]" />
               </Link>
             )}
           </div>
@@ -413,12 +405,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F8F9FC]">
+    <div className="flex min-h-screen bg-[#FAFAFA]">
       {/* Desktop Sidebar */}
       <aside
         className={cn(
-          "hidden lg:block shrink-0 transition-all duration-200 sticky top-0 h-screen z-30",
-          sidebarCollapsed ? "w-[68px]" : "w-[248px]"
+          "hidden lg:block shrink-0 transition-[width] duration-200 sticky top-0 h-screen z-30",
+          sidebarCollapsed ? "w-[64px]" : "w-[232px]"
         )}
       >
         {SidebarContent(false)}
@@ -428,10 +420,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex">
           <div
-            className="fixed inset-0 bg-[#101828]/40"
+            className="fixed inset-0 bg-[#18181B]/35"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="relative z-10 w-[260px] h-full">
+          <aside className="relative z-10 w-[248px] h-full">
             {SidebarContent(true)}
           </aside>
         </div>
@@ -439,38 +431,41 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* Main Column */}
       <div className="flex flex-1 flex-col min-w-0">
-        {/* Topbar */}
-        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-2 sm:gap-4 border-b border-[#E4E7EC] bg-white/95 backdrop-blur-sm px-3.5 sm:px-4 lg:px-6">
-          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+        {/* Global Header (56px) */}
+        <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-2 sm:gap-4 border-b border-[#E4E4E7] bg-white px-4 lg:px-6">
+          <div className="flex items-center gap-2.5 min-w-0">
             <button
               onClick={() => setMobileOpen(true)}
-              className="lg:hidden rounded-[8px] p-1.5 text-[#667085] hover:bg-[#F2F4F7] shrink-0"
+              className="lg:hidden rounded-[6px] p-1.5 text-[#52525B] hover:bg-[#F4F4F5]"
               aria-label="Open menu"
             >
-              <Menu className="h-5 w-5" />
+              <Menu className="h-4 w-4" />
             </button>
 
             <Link href="/dashboard" className="lg:hidden flex items-center shrink-0">
               <WyntroLogo size="sm" />
             </Link>
 
-            <nav aria-label="Breadcrumb" className="hidden sm:flex items-center gap-1.5 text-[13px] min-w-0">
+            <nav
+              aria-label="Breadcrumb"
+              className="hidden sm:flex items-center gap-1.5 text-[13px] min-w-0"
+            >
               <Link
                 href="/dashboard"
-                className="text-[#667085] hover:text-[#101828]"
+                className="text-[#71717A] hover:text-[#18181B]"
               >
                 Wyntro
               </Link>
               {breadcrumbs.map((crumb, i) => (
                 <React.Fragment key={crumb.href}>
-                  <span className="text-[#D0D5DD]">/</span>
+                  <span className="text-[#D4D4D8]">/</span>
                   <Link
                     href={crumb.href}
                     className={cn(
                       "truncate",
                       i === breadcrumbs.length - 1
-                        ? "font-medium text-[#101828]"
-                        : "text-[#667085] hover:text-[#101828]"
+                        ? "font-medium text-[#18181B]"
+                        : "text-[#71717A] hover:text-[#18181B]"
                     )}
                   >
                     {crumb.label}
@@ -480,21 +475,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </nav>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-2.5">
-            <Badge variant="primary" className="hidden md:inline-flex">
-              <Sparkles className="h-3 w-3" />
-              Frontend Demo Mode
-            </Badge>
+          <div className="flex items-center gap-2">
+            <span className="hidden md:inline-flex items-center rounded-[5px] border border-[#E4E4E7] bg-[#F7F7F8] px-2 py-0.5 text-[11px] font-medium text-[#52525B]">
+              Demo Mode
+            </span>
 
-            {/* Role Priority Toggle */}
-            <div className="hidden sm:flex items-center rounded-[8px] border border-[#E4E7EC] bg-[#F8F9FC] p-0.5 text-[12px]">
+            {/* Role Switcher */}
+            <div className="hidden sm:flex items-center rounded-[6px] border border-[#E4E4E7] bg-[#F7F7F8] p-0.5 text-[12px]">
               <button
                 onClick={() => setViewRole("admin")}
                 className={cn(
-                  "rounded-[6px] px-2.5 py-1 font-medium transition-colors cursor-pointer",
+                  "rounded-[4px] px-2 py-0.5 font-medium transition-colors cursor-pointer",
                   viewRole === "admin"
-                    ? "bg-white text-[#101828] shadow-xs"
-                    : "text-[#667085] hover:text-[#101828]"
+                    ? "bg-white text-[#18181B] shadow-[0_1px_2px_rgba(24,24,27,0.06)]"
+                    : "text-[#71717A] hover:text-[#18181B]"
                 )}
               >
                 Admin
@@ -502,24 +496,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <button
                 onClick={() => setViewRole("rep")}
                 className={cn(
-                  "rounded-[6px] px-2.5 py-1 font-medium transition-colors cursor-pointer",
+                  "rounded-[4px] px-2 py-0.5 font-medium transition-colors cursor-pointer",
                   viewRole === "rep"
-                    ? "bg-white text-[#101828] shadow-xs"
-                    : "text-[#667085] hover:text-[#101828]"
+                    ? "bg-white text-[#18181B] shadow-[0_1px_2px_rgba(24,24,27,0.06)]"
+                    : "text-[#71717A] hover:text-[#18181B]"
                 )}
               >
-                Sales Rep
+                Rep
               </button>
             </div>
 
-            {/* Quick Search button */}
             <Button
               variant="secondary"
               size="icon-sm"
               onClick={() => setSearchOpen(true)}
               title="Global Search (Ctrl+K)"
+              aria-label="Global Search"
             >
-              <Search className="h-4 w-4 text-[#667085]" />
+              <Search className="h-3.5 w-3.5 text-[#52525B]" />
             </Button>
 
             {/* Notifications */}
@@ -529,19 +523,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 size="icon-sm"
                 onClick={() => setNotifOpen((o) => !o)}
                 title="Notifications"
+                aria-label="Notifications"
               >
-                <Bell className="h-4 w-4 text-[#667085]" />
+                <Bell className="h-3.5 w-3.5 text-[#52525B]" />
                 {unreadNotifs > 0 && (
-                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#635BFF] text-[10px] font-semibold text-white">
+                  <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#635BFF] text-[9px] font-semibold text-white">
                     {unreadNotifs}
                   </span>
                 )}
               </Button>
 
               {notifOpen && (
-                <div className="absolute right-0 top-full z-40 mt-2 w-80 rounded-[10px] border border-[#E4E7EC] bg-white shadow-xl">
-                  <div className="flex items-center justify-between border-b border-[#E4E7EC] px-4 py-3">
-                    <span className="text-[13px] font-semibold text-[#101828]">
+                <div className="absolute right-0 top-full z-40 mt-1.5 w-80 rounded-[8px] border border-[#E4E4E7] bg-white shadow-[0_12px_32px_-8px_rgba(24,24,27,0.14)]">
+                  <div className="flex items-center justify-between border-b border-[#E4E4E7] px-3.5 py-2.5">
+                    <span className="text-[13px] font-semibold text-[#18181B]">
                       Notifications
                     </span>
                     <button
@@ -551,26 +546,26 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       Mark all read
                     </button>
                   </div>
-                  <div className="max-h-72 overflow-y-auto divide-y divide-[#E4E7EC]">
+                  <div className="max-h-72 overflow-y-auto divide-y divide-[#E4E4E7]">
                     {notifications.map((n) => (
                       <Link
                         key={n.id}
                         href={n.href ?? "/dashboard"}
                         onClick={() => setNotifOpen(false)}
-                        className="block px-4 py-3 hover:bg-[#F8F9FC]"
+                        className="block px-3.5 py-2.5 hover:bg-[#F7F7F8]"
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <p className="text-[13px] font-medium text-[#101828]">
+                          <p className="text-[13px] font-medium text-[#18181B]">
                             {n.title}
                           </p>
                           {!n.read && (
-                            <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#635BFF]" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#635BFF]" />
                           )}
                         </div>
-                        <p className="mt-0.5 text-[12px] text-[#667085]">
+                        <p className="mt-0.5 text-[12px] text-[#52525B]">
                           {n.description}
                         </p>
-                        <p className="mt-1 text-[11px] text-[#98A2B3]">
+                        <p className="mt-1 text-[11px] text-[#A1A1AA]">
                           {n.createdAt}
                         </p>
                       </Link>
@@ -585,22 +580,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Button
                 size="sm"
                 onClick={() => setQuickCreateOpen((o) => !o)}
-                className="gap-1.5"
               >
-                <Plus className="h-4 w-4" />
-                <span className="hidden sm:inline">Quick Create</span>
+                <Plus className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">New</span>
               </Button>
 
               {quickCreateOpen && (
-                <div className="absolute right-0 top-full z-40 mt-2 w-52 rounded-[10px] border border-[#E4E7EC] bg-white p-1.5 shadow-xl">
+                <div className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-[8px] border border-[#E4E4E7] bg-white p-1 shadow-[0_12px_32px_-8px_rgba(24,24,27,0.14)]">
                   <button
                     onClick={() => {
                       setQuickCreateOpen(false);
                       setAddLeadOpen(true);
                     }}
-                    className="flex w-full items-center gap-2 rounded-[6px] px-3 py-2 text-[13px] text-[#101828] hover:bg-[#F8F9FC] cursor-pointer"
+                    className="flex w-full items-center gap-2 rounded-[6px] px-2.5 py-1.5 text-[13px] text-[#18181B] hover:bg-[#F4F4F5] cursor-pointer"
                   >
-                    <Users className="h-4 w-4 text-[#635BFF]" />
+                    <Users className="h-3.5 w-3.5 text-[#71717A]" />
                     New Lead
                   </button>
                   <button
@@ -608,30 +602,30 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       setQuickCreateOpen(false);
                       router.push("/follow-ups");
                     }}
-                    className="flex w-full items-center gap-2 rounded-[6px] px-3 py-2 text-[13px] text-[#101828] hover:bg-[#F8F9FC] cursor-pointer"
+                    className="flex w-full items-center gap-2 rounded-[6px] px-2.5 py-1.5 text-[13px] text-[#18181B] hover:bg-[#F4F4F5] cursor-pointer"
                   >
-                    <CheckSquare className="h-4 w-4 text-[#12B76A]" />
-                    Schedule Follow-up
+                    <CheckSquare className="h-3.5 w-3.5 text-[#71717A]" />
+                    Follow-up Task
                   </button>
                   <button
                     onClick={() => {
                       setQuickCreateOpen(false);
                       router.push("/campaigns");
                     }}
-                    className="flex w-full items-center gap-2 rounded-[6px] px-3 py-2 text-[13px] text-[#101828] hover:bg-[#F8F9FC] cursor-pointer"
+                    className="flex w-full items-center gap-2 rounded-[6px] px-2.5 py-1.5 text-[13px] text-[#18181B] hover:bg-[#F4F4F5] cursor-pointer"
                   >
-                    <Megaphone className="h-4 w-4 text-[#F79009]" />
-                    New Campaign
+                    <Megaphone className="h-3.5 w-3.5 text-[#71717A]" />
+                    Campaign
                   </button>
                   <button
                     onClick={() => {
                       setQuickCreateOpen(false);
                       router.push("/automations");
                     }}
-                    className="flex w-full items-center gap-2 rounded-[6px] px-3 py-2 text-[13px] text-[#101828] hover:bg-[#F8F9FC] cursor-pointer"
+                    className="flex w-full items-center gap-2 rounded-[6px] px-2.5 py-1.5 text-[13px] text-[#18181B] hover:bg-[#F4F4F5] cursor-pointer"
                   >
-                    <Workflow className="h-4 w-4 text-[#2E90FA]" />
-                    New Workflow
+                    <Workflow className="h-3.5 w-3.5 text-[#71717A]" />
+                    Workflow
                   </button>
                 </div>
               )}
@@ -640,34 +634,37 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* Main Workspace */}
-        <main className="flex-1 p-4 lg:p-6 max-w-[1600px] w-full mx-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:px-8 lg:py-6 max-w-[1520px] w-full mx-auto">
           {children}
         </main>
       </div>
 
-      {/* Global Command Search Dialog */}
+      {/* Raycast-style Global Command Search */}
       <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
         <DialogContent className="max-w-xl p-0 overflow-hidden">
           <DialogHeader className="sr-only">
             <DialogTitle>Global Command Search</DialogTitle>
           </DialogHeader>
-          <div className="flex items-center border-b border-[#E4E7EC] px-4 py-3">
-            <Search className="h-4 w-4 text-[#98A2B3] mr-2.5" />
+          <div className="flex items-center border-b border-[#E4E4E7] px-4 py-3">
+            <Search className="h-4 w-4 text-[#A1A1AA] mr-2.5" />
             <input
               autoFocus
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search leads, companies, or jump to a module..."
-              className="flex-1 bg-transparent text-[14px] text-[#101828] placeholder:text-[#98A2B3] focus:outline-none"
+              className="flex-1 bg-transparent text-[14px] text-[#18181B] placeholder:text-[#A1A1AA] focus:outline-none"
             />
+            <kbd className="rounded-[4px] border border-[#E4E4E7] bg-[#F7F7F8] px-1.5 py-0.5 text-[10px] font-mono text-[#71717A]">
+              ESC
+            </kbd>
           </div>
           <div className="max-h-96 overflow-y-auto p-3 space-y-4">
             <div>
-              <p className="px-2 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#98A2B3]">
-                Matching Leads
+              <p className="px-2 pb-1 text-[11px] font-medium text-[#A1A1AA]">
+                Leads
               </p>
               {searchResults.matchedLeads.length === 0 ? (
-                <p className="px-2 py-2 text-[13px] text-[#667085]">
+                <p className="px-2 py-2 text-[13px] text-[#71717A]">
                   No leads match &ldquo;{searchQuery}&rdquo;.
                 </p>
               ) : (
@@ -679,17 +676,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                         setSearchOpen(false);
                         router.push(`/leads/${lead.id}`);
                       }}
-                      className="flex w-full items-center justify-between rounded-[8px] px-2.5 py-2 text-left hover:bg-[#F8F9FC] cursor-pointer"
+                      className="flex w-full items-center justify-between rounded-[6px] px-2.5 py-2 text-left hover:bg-[#F4F4F5] cursor-pointer"
                     >
                       <div>
-                        <p className="text-[13px] font-medium text-[#101828]">
+                        <p className="text-[13px] font-medium text-[#18181B]">
                           {lead.name}
                         </p>
-                        <p className="text-[12px] text-[#667085]">
-                          {lead.company} • {lead.email}
+                        <p className="text-[12px] text-[#71717A]">
+                          {lead.company} · {lead.email}
                         </p>
                       </div>
-                      <Badge variant="outline">{lead.source}</Badge>
+                      <span className="text-[11px] font-medium text-[#71717A]">
+                        {lead.source}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -697,8 +696,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
 
             <div>
-              <p className="px-2 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#98A2B3]">
-                Navigation
+              <p className="px-2 pb-1 text-[11px] font-medium text-[#A1A1AA]">
+                Pages
               </p>
               <div className="grid grid-cols-2 gap-1">
                 {searchResults.matchedPages.map((page) => {
@@ -710,9 +709,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                         setSearchOpen(false);
                         router.push(page.href);
                       }}
-                      className="flex items-center gap-2 rounded-[8px] px-2.5 py-2 text-[13px] text-[#101828] hover:bg-[#F8F9FC] cursor-pointer"
+                      className="flex items-center gap-2 rounded-[6px] px-2.5 py-2 text-[13px] text-[#18181B] hover:bg-[#F4F4F5] cursor-pointer"
                     >
-                      <Icon className="h-4 w-4 text-[#635BFF]" />
+                      <Icon className="h-4 w-4 text-[#71717A] stroke-[1.6]" />
                       {page.label}
                     </button>
                   );

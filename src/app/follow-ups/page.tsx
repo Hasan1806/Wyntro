@@ -4,14 +4,13 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   CheckCircle2,
-  Clock,
-  AlertCircle,
   Plus,
   Trash2,
   CalendarClock,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
-import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
+import { EmptyState, StatusIndicator } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
 import { Input, Textarea } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -44,7 +43,6 @@ export default function FollowUpsPage() {
   const [newDate, setNewDate] = useState("2026-11-26");
   const [newTime, setNewTime] = useState("11:00");
 
-  // Form state
   const [leadId, setLeadId] = useState(leads[0]?.id ?? "");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -90,24 +88,19 @@ export default function FollowUpsPage() {
 
   return (
     <AppShell>
-      <div className="space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-[#101828]">
-              Follow-ups & Tasks
-            </h1>
-            <p className="text-[13px] text-[#667085]">
-              Stay on top of scheduled calls, proposals, and customer commitments
-            </p>
-          </div>
-          <Button size="sm" onClick={() => setCreateOpen(true)}>
-            <Plus className="h-3.5 w-3.5" />
-            Create Follow-up
-          </Button>
-        </div>
+      <div className="space-y-4">
+        <PageHeader
+          title="Follow-ups"
+          description="Manage scheduled calls, proposals, and client commitments"
+          actions={
+            <Button size="sm" onClick={() => setCreateOpen(true)}>
+              <Plus className="h-3.5 w-3.5" />
+              Create Follow-up
+            </Button>
+          }
+        />
 
-        {/* View Tabs */}
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1 border-b border-[#E4E4E7] pb-2">
           {(
             [
               { id: "today", label: "Today" },
@@ -120,10 +113,10 @@ export default function FollowUpsPage() {
             <button
               key={tab.id}
               onClick={() => setView(tab.id)}
-              className={`rounded-[8px] px-3 py-1.5 text-[12px] font-medium cursor-pointer ${
+              className={`rounded-[6px] px-2.5 py-1 text-[12px] font-medium cursor-pointer transition-colors ${
                 view === tab.id
-                  ? "bg-[#635BFF] text-white"
-                  : "bg-white border border-[#E4E7EC] text-[#667085] hover:text-[#101828]"
+                  ? "bg-[#18181B] text-white"
+                  : "text-[#52525B] hover:bg-[#F4F4F5] hover:text-[#18181B]"
               }`}
             >
               {tab.label}
@@ -131,25 +124,28 @@ export default function FollowUpsPage() {
           ))}
         </div>
 
-        {/* Task List */}
-        <div className="space-y-2.5">
-          {filtered.length === 0 ? (
-            <Card className="p-10 text-center text-[13px] text-[#667085]">
-              No follow-ups in this view.
-            </Card>
-          ) : (
-            filtered.map((task) => {
+        {filtered.length === 0 ? (
+          <EmptyState
+            title="No follow-ups in this view"
+            description="Create a new follow-up task or switch to another filter."
+            action={
+              <Button size="sm" variant="secondary" onClick={() => setCreateOpen(true)}>
+                Schedule Follow-up
+              </Button>
+            }
+          />
+        ) : (
+          <div className="rounded-[8px] border border-[#E4E4E7] bg-white divide-y divide-[#E4E4E7]">
+            {filtered.map((task) => {
               const rep = team.find((m) => m.id === task.assignedTo);
               const isOverdue = task.status === "overdue";
               const isDone = task.status === "completed";
               return (
-                <Card
+                <div
                   key={task.id}
-                  className={`p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
-                    isOverdue ? "border-[#FDA29B] bg-[#FEF3F2]/30" : ""
-                  }`}
+                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 py-3 hover:bg-[#F7F7F8] transition-colors"
                 >
-                  <div className="flex items-start gap-3">
+                  <div className="flex items-start gap-3 min-w-0">
                     <button
                       onClick={() => {
                         toggleFollowUpComplete(task.id);
@@ -160,61 +156,51 @@ export default function FollowUpsPage() {
                             : "Updated client activity timeline.",
                         });
                       }}
-                      className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border cursor-pointer ${
+                      aria-label={isDone ? "Reopen task" : "Complete task"}
+                      className={`mt-0.5 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full border cursor-pointer transition-colors ${
                         isDone
-                          ? "border-[#12B76A] bg-[#12B76A] text-white"
+                          ? "border-[#16A34A] bg-[#16A34A] text-white"
                           : isOverdue
-                          ? "border-[#F04438] text-[#F04438]"
-                          : "border-[#D0D5DD] hover:border-[#635BFF]"
+                          ? "border-[#DC2626] text-[#DC2626]"
+                          : "border-[#D4D4D8] hover:border-[#635BFF]"
                       }`}
                     >
-                      {isDone && <CheckCircle2 className="h-3.5 w-3.5" />}
+                      {isDone && <CheckCircle2 className="h-3 w-3" />}
                     </button>
 
-                    <div>
+                    <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
                         <p
-                          className={`text-[14px] font-medium ${
-                            isDone ? "line-through text-[#98A2B3]" : "text-[#101828]"
+                          className={`text-[13px] font-medium ${
+                            isDone ? "line-through text-[#A1A1AA]" : "text-[#18181B]"
                           }`}
                         >
                           {task.title}
                         </p>
-                        {isOverdue && (
-                          <Badge variant="error">
-                            <AlertCircle className="h-3 w-3" />
-                            Overdue
-                          </Badge>
-                        )}
+                        {isOverdue && <StatusIndicator color="#DC2626" label="Overdue" />}
                         {!isOverdue && !isDone && (
-                          <Badge variant="info">
-                            <Clock className="h-3 w-3" />
-                            Scheduled
-                          </Badge>
+                          <StatusIndicator color="#2563EB" label="Scheduled" />
                         )}
-                        {isDone && <Badge variant="success">Completed</Badge>}
+                        {isDone && <StatusIndicator color="#16A34A" label="Completed" />}
                         {task.recurrence !== "none" && (
                           <Badge variant="outline" className="capitalize">
                             {task.recurrence}
                           </Badge>
                         )}
                       </div>
-                      {task.description && (
-                        <p className="text-[12px] text-[#667085] mt-0.5">
-                          {task.description}
-                        </p>
-                      )}
-                      <div className="mt-1.5 flex flex-wrap items-center gap-3 text-[12px] text-[#667085]">
+                      <div className="mt-0.5 flex flex-wrap items-center gap-2.5 text-[12px] text-[#71717A]">
                         <Link
                           href={`/leads/${task.leadId}`}
-                          className="font-medium text-[#635BFF] hover:underline"
+                          className="font-medium text-[#52525B] hover:text-[#635BFF]"
                         >
                           {task.leadName} ({task.company})
                         </Link>
+                        <span>·</span>
                         <span className="tabular-nums">
                           {task.dueDate} at {task.dueTime}
                         </span>
-                        <span>Owner: {rep?.name ?? "Unassigned"}</span>
+                        <span>·</span>
+                        <span>{rep?.name ?? "Unassigned"}</span>
                       </div>
                     </div>
                   </div>
@@ -240,32 +226,32 @@ export default function FollowUpsPage() {
                         toast({ title: "Follow-up deleted" });
                       }}
                       title="Delete task"
+                      aria-label="Delete task"
                     >
-                      <Trash2 className="h-4 w-4 text-[#98A2B3] hover:text-[#F04438]" />
+                      <Trash2 className="h-3.5 w-3.5 text-[#71717A] hover:text-[#DC2626]" />
                     </Button>
                   </div>
-                </Card>
+                </div>
               );
-            })
-          )}
-        </div>
+            })}
+          </div>
+        )}
       </div>
 
-      {/* Create Follow-up Modal */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Schedule Follow-up</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleCreate} className="space-y-3.5">
+          <form onSubmit={handleCreate} className="space-y-4">
             <div>
-              <label className="block text-[12px] font-medium text-[#344054] mb-1">
+              <label className="block text-[13px] font-medium text-[#18181B] mb-1.5">
                 Associated Client
               </label>
               <select
                 value={leadId}
                 onChange={(e) => setLeadId(e.target.value)}
-                className="h-9 w-full rounded-[8px] border border-[#E4E7EC] bg-white px-2.5 text-[13px]"
+                className="h-[38px] w-full rounded-[6px] border border-[#E4E4E7] bg-white px-2.5 text-[13px]"
               >
                 {leads.map((l) => (
                   <option key={l.id} value={l.id}>
@@ -275,7 +261,7 @@ export default function FollowUpsPage() {
               </select>
             </div>
             <div>
-              <label className="block text-[12px] font-medium text-[#344054] mb-1">
+              <label className="block text-[13px] font-medium text-[#18181B] mb-1.5">
                 Task Title
               </label>
               <Input
@@ -287,7 +273,7 @@ export default function FollowUpsPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[12px] font-medium text-[#344054] mb-1">
+                <label className="block text-[13px] font-medium text-[#18181B] mb-1.5">
                   Date
                 </label>
                 <Input
@@ -297,7 +283,7 @@ export default function FollowUpsPage() {
                 />
               </div>
               <div>
-                <label className="block text-[12px] font-medium text-[#344054] mb-1">
+                <label className="block text-[13px] font-medium text-[#18181B] mb-1.5">
                   Time
                 </label>
                 <Input
@@ -309,13 +295,13 @@ export default function FollowUpsPage() {
             </div>
             <div className="grid grid-cols-3 gap-2.5">
               <div>
-                <label className="block text-[12px] font-medium text-[#344054] mb-1">
+                <label className="block text-[13px] font-medium text-[#18181B] mb-1.5">
                   Assignee
                 </label>
                 <select
                   value={assignedTo}
                   onChange={(e) => setAssignedTo(e.target.value)}
-                  className="h-9 w-full rounded-[8px] border border-[#E4E7EC] bg-white px-2 text-[12px]"
+                  className="h-[38px] w-full rounded-[6px] border border-[#E4E4E7] bg-white px-2 text-[12px]"
                 >
                   {team.map((m) => (
                     <option key={m.id} value={m.id}>
@@ -325,13 +311,13 @@ export default function FollowUpsPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-[12px] font-medium text-[#344054] mb-1">
+                <label className="block text-[13px] font-medium text-[#18181B] mb-1.5">
                   Priority
                 </label>
                 <select
                   value={priority}
                   onChange={(e) => setPriority(e.target.value as TaskPriority)}
-                  className="h-9 w-full rounded-[8px] border border-[#E4E7EC] bg-white px-2 text-[12px]"
+                  className="h-[38px] w-full rounded-[6px] border border-[#E4E4E7] bg-white px-2 text-[12px]"
                 >
                   <option value="urgent">Urgent</option>
                   <option value="high">High</option>
@@ -340,13 +326,13 @@ export default function FollowUpsPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-[12px] font-medium text-[#344054] mb-1">
+                <label className="block text-[13px] font-medium text-[#18181B] mb-1.5">
                   Recurrence
                 </label>
                 <select
                   value={recurrence}
                   onChange={(e) => setRecurrence(e.target.value as TaskRecurrence)}
-                  className="h-9 w-full rounded-[8px] border border-[#E4E7EC] bg-white px-2 text-[12px]"
+                  className="h-[38px] w-full rounded-[6px] border border-[#E4E4E7] bg-white px-2 text-[12px]"
                 >
                   <option value="none">None</option>
                   <option value="daily">Daily</option>
@@ -356,7 +342,7 @@ export default function FollowUpsPage() {
               </div>
             </div>
             <div>
-              <label className="block text-[12px] font-medium text-[#344054] mb-1">
+              <label className="block text-[13px] font-medium text-[#18181B] mb-1.5">
                 Description
               </label>
               <Textarea
@@ -375,12 +361,11 @@ export default function FollowUpsPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Reschedule Dialog */}
       <Dialog
         open={Boolean(rescheduleId)}
         onOpenChange={(o) => !o && setRescheduleId(null)}
       >
-        <DialogContent>
+        <DialogContent className="max-w-[420px]">
           <DialogHeader>
             <DialogTitle>Reschedule Follow-up</DialogTitle>
           </DialogHeader>

@@ -14,6 +14,9 @@ import {
   Cog,
   ArrowUp,
   ArrowDown,
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Card } from "@/components/ui/card";
@@ -56,6 +59,7 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
   const [selectedNodeId, setSelectedNodeId] = useState(existing.nodes[0]?.id ?? "");
   const [testLeadId, setTestLeadId] = useState(leads[0]?.id ?? "");
   const [traceSteps, setTraceSteps] = useState<string[]>([]);
+  const [zoom, setZoom] = useState(100);
 
   const hasTrigger = draft.nodes.some((n) => n.category === "trigger");
   const hasAction = draft.nodes.some((n) => n.category === "action");
@@ -121,29 +125,30 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
   return (
     <AppShell>
       <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-[#E4E4E7]">
+          <div className="flex items-center gap-3 min-w-0">
             <Link
               href="/automations"
-              className="rounded-[8px] border border-[#E4E7EC] bg-white p-2 text-[#667085] hover:text-[#101828]"
+              className="rounded-[6px] border border-[#E4E4E7] bg-white p-2 text-[#52525B] hover:text-[#18181B] shrink-0"
+              aria-label="Back to Workflows"
             >
               <ArrowLeft className="h-4 w-4" />
             </Link>
-            <div>
+            <div className="min-w-0 flex-1">
               <Input
                 value={draft.name}
                 onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-                className="font-semibold text-[16px] h-8 border-transparent hover:border-[#E4E7EC] px-1.5"
+                className="font-semibold text-[16px] h-8 border-transparent hover:border-[#E4E4E7] px-1.5"
               />
-              <p className="text-[12px] text-[#667085] px-1.5">
-                Visual Node Studio • Deterministic Local Simulator
+              <p className="text-[12px] text-[#71717A] px-1.5">
+                Visual Workflow Studio · Deterministic Local Simulator
               </p>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
-            <div className="flex items-center gap-2 rounded-[8px] border border-[#E4E7EC] bg-white px-3 py-1.5">
-              <span className="text-[12px] font-medium text-[#344054]">Enabled</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-2 rounded-[6px] border border-[#E4E4E7] bg-white px-2.5 h-[30px]">
+              <span className="text-[12px] font-medium text-[#52525B]">Enabled</span>
               <Switch
                 checked={draft.enabled}
                 onCheckedChange={(v) => {
@@ -170,9 +175,9 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
         </div>
 
         {!isValid && (
-          <div className="flex items-center gap-2 rounded-[8px] border border-[#F79009]/40 bg-[#FFFAEB] px-4 py-2.5 text-[12px] text-[#B54708]">
+          <div className="flex items-center gap-2 rounded-[6px] border border-[#FDE68A] bg-[#FFFBEB] px-3.5 py-2 text-[12px] text-[#B45309]">
             <AlertTriangle className="h-4 w-4 shrink-0" />
-            Workflow validation: Add at least one Trigger and one Action node before activating.
+            Add at least one Trigger and one Action node before activating.
           </div>
         )}
 
@@ -180,145 +185,181 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
           {/* Palette */}
           <Card className="lg:col-span-3 p-4 space-y-4">
             {(["trigger", "condition", "action"] as const).map((cat) => (
-              <div key={cat} className="space-y-1.5">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-[#98A2B3]">
+              <div key={cat} className="space-y-1">
+                <p className="text-[11px] font-medium text-[#71717A] capitalize pb-0.5">
                   {cat}s
                 </p>
                 {NODE_CATALOG.filter((n) => n.category === cat).map((item) => (
                   <button
                     key={item.kind}
                     onClick={() => addNode(item)}
-                    className="flex w-full items-center justify-between rounded-[8px] border border-[#E4E7EC] px-2.5 py-2 text-left text-[12px] hover:border-[#635BFF] hover:bg-[#EFEDFF]/40 cursor-pointer"
+                    className="flex w-full items-center justify-between rounded-[6px] border border-[#E4E4E7] px-2.5 py-1.5 text-left text-[12px] text-[#18181B] hover:bg-[#F7F7F8] hover:border-[#D4D4D8] cursor-pointer"
                   >
                     <span>{item.label}</span>
-                    <Plus className="h-3.5 w-3.5 text-[#635BFF]" />
+                    <Plus className="h-3.5 w-3.5 text-[#71717A]" />
                   </button>
                 ))}
               </div>
             ))}
           </Card>
 
-          {/* Dotted Studio Canvas */}
-          <div className="lg:col-span-6 rounded-[12px] border border-[#E4E7EC] bg-[#F8F9FC] bg-[radial-gradient(#D0D5DD_1px,transparent_1px)] [background-size:18px_18px] p-6 min-h-[540px]">
-            <div className="max-w-md mx-auto space-y-1">
-              {draft.nodes.map((node, idx) => {
-                const Icon =
-                  node.category === "trigger"
-                    ? Zap
-                    : node.category === "condition"
-                    ? GitBranch
-                    : Cog;
-                const badgeVar =
-                  node.category === "trigger"
-                    ? "primary"
-                    : node.category === "condition"
-                    ? "warning"
-                    : "success";
-                const accentBorder =
-                  node.category === "trigger"
-                    ? "border-l-[#635BFF]"
-                    : node.category === "condition"
-                    ? "border-l-[#F79009]"
-                    : "border-l-[#12B76A]";
+          {/* Studio Canvas */}
+          <div className="lg:col-span-6 rounded-[8px] border border-[#E4E4E7] bg-[#F7F7F8] bg-[radial-gradient(#D4D4D8_1px,transparent_1px)] [background-size:16px_16px] flex flex-col min-h-[560px]">
+            {/* Canvas Controls */}
+            <div className="flex items-center justify-between border-b border-[#E4E4E7] bg-white px-3 py-2 rounded-t-[8px]">
+              <span className="text-[12px] font-medium text-[#71717A]">
+                {draft.nodes.length} node{draft.nodes.length === 1 ? "" : "s"}
+              </span>
+              <div className="flex items-center gap-1">
+                <Button
+                  size="icon-sm"
+                  variant="ghost"
+                  aria-label="Zoom out"
+                  onClick={() => setZoom((z) => Math.max(80, z - 10))}
+                >
+                  <ZoomOut className="h-3.5 w-3.5" />
+                </Button>
+                <span className="text-[11px] font-medium text-[#52525B] tabular-nums w-10 text-center">
+                  {zoom}%
+                </span>
+                <Button
+                  size="icon-sm"
+                  variant="ghost"
+                  aria-label="Zoom in"
+                  onClick={() => setZoom((z) => Math.min(120, z + 10))}
+                >
+                  <ZoomIn className="h-3.5 w-3.5" />
+                </Button>
+                <Button
+                  size="icon-sm"
+                  variant="ghost"
+                  aria-label="Fit to view"
+                  onClick={() => setZoom(100)}
+                >
+                  <Maximize2 className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </div>
 
-                return (
-                  <div key={node.id} className="flex flex-col items-center">
-                    <Card
-                      onClick={() => setSelectedNodeId(node.id)}
-                      className={`w-full p-4 cursor-pointer transition-all border-l-4 ${accentBorder} ${
-                        selectedNodeId === node.id
-                          ? "border-[#635BFF] ring-2 ring-[#635BFF]/15 shadow-md"
-                          : "hover:border-[#D0D5DD]"
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex items-start gap-2.5">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] bg-[#F8F9FC] border border-[#E4E7EC]">
-                            <Icon className="h-4 w-4 text-[#635BFF]" />
-                          </div>
-                          <div>
-                            <div className="flex flex-wrap items-center gap-1.5">
-                              <span className="text-[10px] font-mono text-[#98A2B3]">
-                                #{idx + 1}
-                              </span>
-                              <Badge variant={badgeVar} className="uppercase text-[10px]">
-                                {node.category}
-                              </Badge>
-                              {node.branch && node.branch !== "all" && (
-                                <Badge variant="outline" className="text-[10px]">
-                                  Branch: {node.branch.toUpperCase()}
+            <div className="flex-1 p-6 overflow-auto">
+              <div
+                className="max-w-[380px] mx-auto space-y-0 transition-transform origin-top"
+                style={{ transform: `scale(${zoom / 100})` }}
+              >
+                {draft.nodes.map((node, idx) => {
+                  const Icon =
+                    node.category === "trigger"
+                      ? Zap
+                      : node.category === "condition"
+                      ? GitBranch
+                      : Cog;
+                  const accentColor =
+                    node.category === "trigger"
+                      ? "#635BFF"
+                      : node.category === "condition"
+                      ? "#D97706"
+                      : "#16A34A";
+                  const badgeVar =
+                    node.category === "trigger"
+                      ? "primary"
+                      : node.category === "condition"
+                      ? "warning"
+                      : "success";
+
+                  return (
+                    <div key={node.id} className="flex flex-col items-center">
+                      <div
+                        onClick={() => setSelectedNodeId(node.id)}
+                        className={`w-full rounded-[8px] border bg-white p-3.5 cursor-pointer transition-colors border-l-[3px] ${
+                          selectedNodeId === node.id
+                            ? "border-[#635BFF] ring-2 ring-[#635BFF]/15"
+                            : "border-[#E4E4E7] hover:border-[#D4D4D8]"
+                        }`}
+                        style={{ borderLeftColor: accentColor }}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-start gap-2.5 min-w-0">
+                            <Icon
+                              className="h-4 w-4 shrink-0 mt-0.5"
+                              style={{ color: accentColor }}
+                            />
+                            <div className="min-w-0">
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <Badge variant={badgeVar} className="capitalize">
+                                  {node.category}
                                 </Badge>
+                                {node.branch && node.branch !== "all" && (
+                                  <Badge variant="outline">
+                                    {node.branch.toUpperCase()}
+                                  </Badge>
+                                )}
+                              </div>
+                              <p className="text-[13px] font-medium text-[#18181B] mt-1">
+                                {node.label}
+                              </p>
+                              {Object.values(node.config)[0] && (
+                                <p className="mt-1 text-[11px] text-[#71717A] truncate">
+                                  {Object.values(node.config)[0]}
+                                </p>
                               )}
                             </div>
-                            <p className="text-[13px] font-semibold text-[#101828] mt-1">
-                              {node.label}
-                            </p>
-                            {Object.values(node.config)[0] && (
-                              <p className="mt-1 inline-block rounded bg-[#F8F9FC] border border-[#E4E7EC] px-2 py-0.5 text-[11px] text-[#667085]">
-                                {Object.values(node.config)[0]}
-                              </p>
-                            )}
+                          </div>
+
+                          <div className="flex items-center gap-0.5 shrink-0">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                moveNode(idx, -1);
+                              }}
+                              className="p-1 text-[#A1A1AA] hover:text-[#18181B] cursor-pointer"
+                              aria-label="Move node up"
+                            >
+                              <ArrowUp className="h-3.5 w-3.5" />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                moveNode(idx, 1);
+                              }}
+                              className="p-1 text-[#A1A1AA] hover:text-[#18181B] cursor-pointer"
+                              aria-label="Move node down"
+                            >
+                              <ArrowDown className="h-3.5 w-3.5" />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeNode(node.id);
+                              }}
+                              className="p-1 text-[#A1A1AA] hover:text-[#DC2626] cursor-pointer"
+                              aria-label="Delete node"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
                           </div>
                         </div>
-
-                        <div className="flex items-center gap-0.5">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              moveNode(idx, -1);
-                            }}
-                            className="p-1 text-[#98A2B3] hover:text-[#101828] cursor-pointer"
-                            title="Move up"
-                          >
-                            <ArrowUp className="h-3.5 w-3.5" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              moveNode(idx, 1);
-                            }}
-                            className="p-1 text-[#98A2B3] hover:text-[#101828] cursor-pointer"
-                            title="Move down"
-                          >
-                            <ArrowDown className="h-3.5 w-3.5" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              removeNode(node.id);
-                            }}
-                            className="p-1 text-[#98A2B3] hover:text-[#F04438] cursor-pointer"
-                            title="Delete node"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
                       </div>
-                    </Card>
-                    {idx < draft.nodes.length - 1 && (
-                      <div className="flex flex-col items-center py-0.5">
-                        <div className="h-4 w-0.5 bg-[#CBD5E1]" />
-                        <div className="h-1.5 w-1.5 rounded-full bg-[#635BFF]" />
-                        <div className="h-4 w-0.5 bg-[#CBD5E1]" />
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+                      {idx < draft.nodes.length - 1 && (
+                        <div className="h-6 w-px bg-[#D4D4D8]" />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
-          {/* Inspector & Live Trace */}
+          {/* Inspector & Trace */}
           <div className="lg:col-span-3 space-y-4">
             <Card className="p-4 space-y-3">
-              <p className="text-[12px] font-semibold uppercase tracking-wider text-[#98A2B3]">
-                Configure Node
+              <p className="text-[12px] font-semibold text-[#18181B]">
+                Node Configuration
               </p>
               {selectedNode ? (
                 <>
                   <div>
-                    <label className="block text-[11px] text-[#667085] mb-1">
-                      Node Label
+                    <label className="block text-[12px] font-medium text-[#52525B] mb-1">
+                      Label
                     </label>
                     <Input
                       value={selectedNode.label}
@@ -335,8 +376,8 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] text-[#667085] mb-1">
-                      Parameter / Value
+                    <label className="block text-[12px] font-medium text-[#52525B] mb-1">
+                      Parameter
                     </label>
                     <Input
                       value={Object.values(selectedNode.config)[0] ?? ""}
@@ -354,8 +395,8 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
                   </div>
                   {selectedNode.category === "action" && (
                     <div>
-                      <label className="block text-[11px] text-[#667085] mb-1">
-                        Conditional Branch
+                      <label className="block text-[12px] font-medium text-[#52525B] mb-1">
+                        Branch
                       </label>
                       <select
                         value={selectedNode.branch ?? "all"}
@@ -372,7 +413,7 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
                             ),
                           })
                         }
-                        className="h-9 w-full rounded-[8px] border border-[#E4E7EC] px-2.5 text-[12px]"
+                        className="h-[38px] w-full rounded-[6px] border border-[#E4E4E7] px-2.5 text-[12px]"
                       >
                         <option value="all">Always run (All)</option>
                         <option value="yes">Condition matched (Yes)</option>
@@ -382,18 +423,18 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
                   )}
                 </>
               ) : (
-                <p className="text-[12px] text-[#667085]">Select a node to edit.</p>
+                <p className="text-[12px] text-[#71717A]">Select a node to edit.</p>
               )}
             </Card>
 
             <Card className="p-4 space-y-3">
-              <p className="text-[12px] font-semibold uppercase tracking-wider text-[#98A2B3]">
-                Test & Execution Trace
+              <p className="text-[12px] font-semibold text-[#18181B]">
+                Simulation & History
               </p>
               <select
                 value={testLeadId}
                 onChange={(e) => setTestLeadId(e.target.value)}
-                className="h-9 w-full rounded-[8px] border border-[#E4E7EC] px-2.5 text-[12px]"
+                className="h-[38px] w-full rounded-[6px] border border-[#E4E4E7] px-2.5 text-[12px]"
               >
                 {leads.map((l) => (
                   <option key={l.id} value={l.id}>
@@ -403,8 +444,8 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
               </select>
 
               {traceSteps.length > 0 && (
-                <div className="rounded-[8px] border border-[#12B76A]/30 bg-[#ECFDF3] p-2.5 space-y-1 text-[11px] text-[#027A48]">
-                  <p className="font-semibold">Latest Simulation Trace:</p>
+                <div className="rounded-[6px] border border-[#E4E4E7] bg-[#F0FDF4] p-2.5 space-y-1 text-[11px] text-[#15803D]">
+                  <p className="font-semibold">Latest Simulation Trace</p>
                   {traceSteps.map((s) => (
                     <p key={s}>{s}</p>
                   ))}
@@ -415,13 +456,13 @@ export function WorkflowBuilderClient({ id }: { id: string }) {
                 {existing.executions.map((ex) => (
                   <div
                     key={ex.id}
-                    className="rounded-[8px] border border-[#E4E7EC] bg-[#F8F9FC] p-2.5 text-[11px]"
+                    className="rounded-[6px] border border-[#E4E4E7] bg-[#F7F7F8] p-2.5 text-[11px]"
                   >
-                    <div className="flex items-center gap-1 font-medium text-[#12B76A]">
+                    <div className="flex items-center gap-1 font-medium text-[#16A34A]">
                       <CheckCircle2 className="h-3 w-3" />
                       {ex.leadName}
                     </div>
-                    <p className="text-[#667085] mt-0.5">{ex.summary}</p>
+                    <p className="text-[#52525B] mt-0.5">{ex.summary}</p>
                   </div>
                 ))}
               </div>

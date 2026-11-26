@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Keyboard, ShieldCheck, BookOpen } from "lucide-react";
+import { Search } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/ui/page-header";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
@@ -32,59 +33,50 @@ export default function HelpPage() {
 
   return (
     <AppShell>
-      <div className="space-y-5 max-w-4xl">
-        <div>
-          <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-[#101828]">
-            Help Center
-          </h1>
-          <p className="text-[13px] text-[#667085]">
-            Quick guides, keyboard shortcuts, and frontend demo documentation
-          </p>
-        </div>
+      <div className="space-y-5 max-w-3xl">
+        <PageHeader
+          title="Help Center"
+          description="Quick guides, keyboard shortcuts, and demo mode documentation"
+        />
 
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#98A2B3]" />
+        <div className="relative max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#A1A1AA]" />
           <Input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search help articles..."
-            className="pl-9"
+            className="pl-8.5 h-9"
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className="p-5 space-y-2">
-            <div className="flex items-center gap-2 text-[14px] font-semibold text-[#101828]">
-              <Keyboard className="h-4 w-4 text-[#635BFF]" />
+          <Card className="p-4 space-y-1">
+            <p className="text-[13px] font-semibold text-[#18181B]">
               Keyboard Shortcuts
-            </div>
-            <p className="text-[13px] text-[#667085]">
-              Press <kbd className="rounded border px-1.5 py-0.5 text-[11px]">Ctrl/⌘ + K</kbd> anywhere to open Global Command Search.
+            </p>
+            <p className="text-[13px] text-[#52525B]">
+              Press <kbd className="rounded-[4px] border border-[#E4E4E7] bg-[#F7F7F8] px-1.5 py-0.5 text-[11px] font-mono">Ctrl/⌘ + K</kbd> anywhere to open Global Search.
             </p>
           </Card>
 
-          <Card className="p-5 space-y-2">
-            <div className="flex items-center gap-2 text-[14px] font-semibold text-[#101828]">
-              <ShieldCheck className="h-4 w-4 text-[#12B76A]" />
+          <Card className="p-4 space-y-1">
+            <p className="text-[13px] font-semibold text-[#18181B]">
               Frontend Demo Mode
-            </div>
-            <p className="text-[13px] text-[#667085]">
-              All data persists locally in browser storage. Reset anytime in Settings → Demo & Reset.
+            </p>
+            <p className="text-[13px] text-[#52525B]">
+              Data persists locally in browser storage. Reset anytime in Settings → Demo & Reset.
             </p>
           </Card>
         </div>
 
-        <div className="space-y-3">
+        <Card className="divide-y divide-[#E4E4E7]">
           {filtered.map((g) => (
-            <Card key={g.title} className="p-5">
-              <div className="flex items-center gap-2 text-[14px] font-semibold text-[#101828]">
-                <BookOpen className="h-4 w-4 text-[#635BFF]" />
-                {g.title}
-              </div>
-              <p className="mt-1.5 text-[13px] text-[#667085]">{g.body}</p>
-            </Card>
+            <div key={g.title} className="p-4">
+              <p className="text-[14px] font-semibold text-[#18181B]">{g.title}</p>
+              <p className="mt-1 text-[13px] text-[#52525B]">{g.body}</p>
+            </div>
           ))}
-        </div>
+        </Card>
       </div>
     </AppShell>
   );

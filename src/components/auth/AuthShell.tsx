@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { WyntroLogo } from "@/components/brand/WyntroLogo";
-import { ShieldCheck } from "lucide-react";
 
 export function AuthShell({
   title,
@@ -12,9 +11,9 @@ export function AuthShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#F8F9FC] flex flex-col justify-between p-6">
-      <div className="flex items-center justify-between max-w-6xl w-full mx-auto">
-        <Link href="/dashboard">
+    <div className="min-h-screen bg-[#FAFAFA] flex flex-col justify-between p-6">
+      <div className="flex items-center justify-between max-w-5xl w-full mx-auto">
+        <Link href="/">
           <WyntroLogo size="md" />
         </Link>
         <Link
@@ -25,26 +24,23 @@ export function AuthShell({
         </Link>
       </div>
 
-      <div className="mx-auto w-full max-w-[420px] my-8">
-        <div className="rounded-[12px] border border-[#E4E7EC] bg-white p-7 shadow-[0_1px_3px_rgba(16,24,40,0.06)]">
-          <div className="mb-6">
-            <h1 className="text-[22px] font-semibold tracking-[-0.02em] text-[#101828]">
+      <div className="mx-auto w-full max-w-[400px] my-8">
+        <div className="rounded-[8px] border border-[#E4E4E7] bg-white p-6">
+          <div className="mb-5">
+            <h1 className="text-[20px] font-semibold tracking-[-0.02em] text-[#18181B]">
               {title}
             </h1>
-            <p className="mt-1 text-[13px] text-[#667085]">{subtitle}</p>
+            <p className="mt-1 text-[13px] text-[#71717A]">{subtitle}</p>
           </div>
           {children}
         </div>
 
-        <div className="mt-4 flex items-center justify-center gap-2 rounded-[8px] border border-[#E4E7EC] bg-white/70 px-3 py-2 text-[12px] text-[#667085]">
-          <ShieldCheck className="h-4 w-4 text-[#635BFF] shrink-0" />
-          <span>
-            Simulated frontend authentication for demo preview — not production security.
-          </span>
-        </div>
+        <p className="mt-3 text-center text-[12px] text-[#71717A]">
+          Simulated frontend authentication for demo preview — not production security.
+        </p>
       </div>
 
-      <div className="text-center text-[12px] text-[#98A2B3]">
+      <div className="text-center text-[12px] text-[#A1A1AA]">
         Wyntro — Connect smarter. Convert faster.
       </div>
     </div>

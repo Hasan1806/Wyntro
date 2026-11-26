@@ -14,25 +14,20 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
-import {
-  ArrowUpRight,
-  ArrowDownRight,
-  Download,
-  Plus,
-  Clock,
-  AlertCircle,
-  CheckCircle2,
-  Users,
-  TrendingUp,
-  Flame,
-} from "lucide-react";
+import { Download, Plus } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/ui/page-header";
+import {
+  Avatar,
+  MetricCard,
+  SectionHeader,
+  StatusIndicator,
+} from "@/components/ui/primitives";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { AddLeadDrawer } from "@/components/leads/AddLeadDrawer";
 import { useCrmStore } from "@/store/useCrmStore";
-import { exportToCsv, formatCurrency, getInitials } from "@/lib/utils";
+import { exportToCsv, formatCurrency } from "@/lib/utils";
 import { toast } from "@/components/ui/toast";
 
 const ACQUISITION_DATA: Record<
@@ -40,24 +35,24 @@ const ACQUISITION_DATA: Record<
   { day: string; leads: number; converted: number; pipeline: number }[]
 > = {
   "7d": [
-    { day: "Mon", leads: 14, converted: 4, pipeline: 42000 },
-    { day: "Tue", leads: 19, converted: 5, pipeline: 58000 },
-    { day: "Wed", leads: 16, converted: 6, pipeline: 64000 },
-    { day: "Thu", leads: 24, converted: 7, pipeline: 81000 },
-    { day: "Fri", leads: 28, converted: 9, pipeline: 96000 },
-    { day: "Sat", leads: 12, converted: 3, pipeline: 38000 },
-    { day: "Sun", leads: 15, converted: 4, pipeline: 49000 },
+    { day: "Mon", leads: 14, converted: 4, pipeline: 420000 },
+    { day: "Tue", leads: 19, converted: 5, pipeline: 580000 },
+    { day: "Wed", leads: 16, converted: 6, pipeline: 640000 },
+    { day: "Thu", leads: 24, converted: 7, pipeline: 810000 },
+    { day: "Fri", leads: 28, converted: 9, pipeline: 960000 },
+    { day: "Sat", leads: 12, converted: 3, pipeline: 380000 },
+    { day: "Sun", leads: 15, converted: 4, pipeline: 490000 },
   ],
   "30d": [
-    { day: "W1", leads: 64, converted: 16, pipeline: 168000 },
-    { day: "W2", leads: 78, converted: 21, pipeline: 214000 },
-    { day: "W3", leads: 92, converted: 27, pipeline: 278000 },
-    { day: "W4", leads: 108, converted: 34, pipeline: 342000 },
+    { day: "W1", leads: 64, converted: 16, pipeline: 1680000 },
+    { day: "W2", leads: 78, converted: 21, pipeline: 2140000 },
+    { day: "W3", leads: 92, converted: 27, pipeline: 2780000 },
+    { day: "W4", leads: 108, converted: 34, pipeline: 3420000 },
   ],
   "90d": [
-    { day: "Sep", leads: 240, converted: 62, pipeline: 610000 },
-    { day: "Oct", leads: 295, converted: 81, pipeline: 780000 },
-    { day: "Nov", leads: 342, converted: 98, pipeline: 945000 },
+    { day: "Sep", leads: 240, converted: 62, pipeline: 6100000 },
+    { day: "Oct", leads: 295, converted: 81, pipeline: 7800000 },
+    { day: "Nov", leads: 342, converted: 98, pipeline: 9450000 },
   ],
 };
 
@@ -161,150 +156,106 @@ export default function DashboardPage() {
     toast({ title: "Report exported", description: "Downloaded CSV summary." });
   };
 
-  const kpis = [
-    {
-      label: "Total Leads",
-      value: String(metrics.total),
-      delta: "+14.2%",
-      positive: true,
-      sub: "vs previous period",
-    },
-    {
-      label: "New Leads",
-      value: String(metrics.newLeads),
-      delta: "+8.4%",
-      positive: true,
-      sub: "awaiting first touch",
-    },
-    {
-      label: "Qualified Leads",
-      value: String(metrics.qualified),
-      delta: "+11.8%",
-      positive: true,
-      sub: "SQL & beyond",
-    },
-    {
-      label: "Conversion Rate",
-      value: `${metrics.conversionRate}%`,
-      delta: "+1.9%",
-      positive: true,
-      sub: "closed-won ratio",
-    },
-    {
-      label: "Pipeline Value",
-      value: formatCurrency(metrics.pipelineValue),
-      delta: "+18.5%",
-      positive: true,
-      sub: "active opportunities",
-    },
-    {
-      label: "Avg. Response Time",
-      value: metrics.avgResponse,
-      delta: "-22%",
-      positive: true,
-      sub: "faster than target",
-    },
-  ];
-
   return (
     <AppShell>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-[#101828]">
-              Welcome, {currentUser.name.split(" ")[0]}
-            </h1>
-            <p className="text-[13px] text-[#667085] mt-0.5">
-              {currentOrg.name} •{" "}
-              {viewRole === "admin"
-                ? "Executive & team-wide revenue overview"
-                : "Your personal pipeline, follow-ups, and response priorities"}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="inline-flex rounded-[8px] border border-[#E4E7EC] bg-white p-0.5">
-              {(["7d", "30d", "90d"] as const).map((range) => (
-                <button
-                  key={range}
-                  onClick={() => setDateRange(range)}
-                  className={`rounded-[6px] px-2.5 py-1 text-[12px] font-medium cursor-pointer transition-colors ${
-                    dateRange === range
-                      ? "bg-[#EFEDFF] text-[#635BFF]"
-                      : "text-[#667085] hover:text-[#101828]"
-                  }`}
-                >
-                  {range === "7d" ? "Last 7 days" : range === "30d" ? "Last 30 days" : "Last 90 days"}
-                </button>
-              ))}
-            </div>
-            <Button variant="secondary" size="sm" onClick={handleExport}>
-              <Download className="h-3.5 w-3.5" />
-              Export Report
-            </Button>
-            <Button size="sm" onClick={() => setAddLeadOpen(true)}>
-              <Plus className="h-3.5 w-3.5" />
-              Create Lead
-            </Button>
-          </div>
-        </div>
-
-        {/* KPI Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-          {kpis.map((kpi) => (
-            <Card key={kpi.label} className="p-4">
-              <p className="text-[12px] font-medium text-[#667085]">{kpi.label}</p>
-              <p className="mt-2 text-[28px] leading-none font-semibold tracking-[-0.02em] text-[#101828] tabular-nums">
-                {kpi.value}
-              </p>
-              <div className="mt-3 flex items-center gap-1.5 text-[12px]">
-                <span
-                  className={`inline-flex items-center gap-0.5 font-medium ${
-                    kpi.positive ? "text-[#12B76A]" : "text-[#F04438]"
-                  }`}
-                >
-                  {kpi.positive ? (
-                    <ArrowUpRight className="h-3.5 w-3.5" />
-                  ) : (
-                    <ArrowDownRight className="h-3.5 w-3.5" />
-                  )}
-                  {kpi.delta}
-                </span>
-                <span className="text-[#98A2B3] truncate">{kpi.sub}</span>
+        <PageHeader
+          title={`Welcome, ${currentUser.name.split(" ")[0]}`}
+          description={`${currentOrg.name} · ${
+            viewRole === "admin"
+              ? "Executive and team-wide revenue overview"
+              : "Personal pipeline, follow-ups, and response priorities"
+          }`}
+          actions={
+            <>
+              <div className="inline-flex rounded-[6px] border border-[#E4E4E7] bg-[#F7F7F8] p-0.5">
+                {(["7d", "30d", "90d"] as const).map((range) => (
+                  <button
+                    key={range}
+                    onClick={() => setDateRange(range)}
+                    className={`rounded-[4px] px-2.5 py-1 text-[12px] font-medium cursor-pointer transition-colors ${
+                      dateRange === range
+                        ? "bg-white text-[#18181B] shadow-[0_1px_2px_rgba(24,24,27,0.06)]"
+                        : "text-[#71717A] hover:text-[#18181B]"
+                    }`}
+                  >
+                    {range === "7d" ? "7 days" : range === "30d" ? "30 days" : "90 days"}
+                  </button>
+                ))}
               </div>
-            </Card>
-          ))}
+              <Button variant="secondary" size="sm" onClick={handleExport}>
+                <Download className="h-3.5 w-3.5" />
+                Export
+              </Button>
+              <Button size="sm" onClick={() => setAddLeadOpen(true)}>
+                <Plus className="h-3.5 w-3.5" />
+                Create Lead
+              </Button>
+            </>
+          }
+        />
+
+        {/* Compact KPI Strip */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+          <MetricCard
+            label="Total Leads"
+            value={String(metrics.total)}
+            delta="+14.2%"
+            sublabel="vs prior period"
+          />
+          <MetricCard
+            label="New Leads"
+            value={String(metrics.newLeads)}
+            delta="+8.4%"
+            sublabel="awaiting touch"
+          />
+          <MetricCard
+            label="Qualified"
+            value={String(metrics.qualified)}
+            delta="+11.8%"
+            sublabel="SQL & beyond"
+          />
+          <MetricCard
+            label="Conversion Rate"
+            value={`${metrics.conversionRate}%`}
+            delta="+1.9%"
+            sublabel="closed-won"
+          />
+          <MetricCard
+            label="Pipeline Value"
+            value={formatCurrency(metrics.pipelineValue)}
+            delta="+18.5%"
+            sublabel="active deals"
+          />
+          <MetricCard
+            label="Avg. Response"
+            value={metrics.avgResponse}
+            delta="-22%"
+            sublabel="faster than SLA"
+          />
         </div>
 
-        {/* Charts Row 1 */}
+        {/* Analytics Row 1 */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <Card className="lg:col-span-2">
             <CardHeader>
               <div>
-                <CardTitle>Lead Acquisition & Conversion Trend</CardTitle>
-                <p className="text-[12px] text-[#667085]">
-                  New inbound leads vs converted opportunities ({dateRange})
+                <CardTitle>Lead Acquisition & Conversion</CardTitle>
+                <p className="text-[12px] text-[#71717A]">
+                  Inbound volume vs converted opportunities ({dateRange})
                 </p>
               </div>
-              <Badge variant="outline">Live Demo Series</Badge>
             </CardHeader>
-            <CardContent className="h-[260px]">
+            <CardContent className="h-[248px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={ACQUISITION_DATA[dateRange]}>
-                  <defs>
-                    <linearGradient id="wyntroIndigo" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#635BFF" stopOpacity={0.22} />
-                      <stop offset="95%" stopColor="#635BFF" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E4E7EC" vertical={false} />
-                  <XAxis dataKey="day" tick={{ fontSize: 12, fill: "#667085" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 12, fill: "#667085" }} axisLine={false} tickLine={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E4E4E7" vertical={false} />
+                  <XAxis dataKey="day" tick={{ fontSize: 12, fill: "#71717A" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 12, fill: "#71717A" }} axisLine={false} tickLine={false} />
                   <Tooltip
                     contentStyle={{
                       borderRadius: "8px",
-                      border: "1px solid #E4E7EC",
+                      border: "1px solid #E4E4E7",
                       fontSize: "12px",
                     }}
                   />
@@ -313,16 +264,18 @@ export default function DashboardPage() {
                     dataKey="leads"
                     name="Acquired Leads"
                     stroke="#635BFF"
-                    strokeWidth={2}
-                    fill="url(#wyntroIndigo)"
+                    strokeWidth={1.75}
+                    fill="#EFEDFF"
+                    isAnimationActive={false}
                   />
                   <Area
                     type="monotone"
                     dataKey="converted"
                     name="Converted"
-                    stroke="#12B76A"
-                    strokeWidth={2}
+                    stroke="#16A34A"
+                    strokeWidth={1.75}
                     fill="transparent"
+                    isAnimationActive={false}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -332,65 +285,63 @@ export default function DashboardPage() {
           <Card>
             <CardHeader>
               <div>
-                <CardTitle>Lead Source Distribution</CardTitle>
-                <p className="text-[12px] text-[#667085]">Active leads by channel</p>
+                <CardTitle>Lead Sources</CardTitle>
+                <p className="text-[12px] text-[#71717A]">Distribution by channel</p>
               </div>
             </CardHeader>
-            <CardContent className="h-[260px]">
+            <CardContent className="h-[248px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={sourceData} layout="vertical" margin={{ left: 10 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E4E7EC" horizontal={false} />
-                  <XAxis type="number" tick={{ fontSize: 12, fill: "#667085" }} axisLine={false} tickLine={false} />
+                <BarChart data={sourceData} layout="vertical" margin={{ left: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E4E4E7" horizontal={false} />
+                  <XAxis type="number" tick={{ fontSize: 12, fill: "#71717A" }} axisLine={false} tickLine={false} />
                   <YAxis
                     dataKey="name"
                     type="category"
                     width={96}
-                    tick={{ fontSize: 12, fill: "#344054" }}
+                    tick={{ fontSize: 12, fill: "#52525B" }}
                     axisLine={false}
                     tickLine={false}
                   />
                   <Tooltip
                     contentStyle={{
                       borderRadius: "8px",
-                      border: "1px solid #E4E7EC",
+                      border: "1px solid #E4E4E7",
                       fontSize: "12px",
                     }}
                   />
-                  <Bar dataKey="count" name="Leads" fill="#635BFF" radius={[0, 6, 6, 0]} barSize={18} />
+                  <Bar dataKey="count" name="Leads" fill="#635BFF" radius={[0, 4, 4, 0]} barSize={16} isAnimationActive={false} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
         </div>
 
-        {/* Charts Row 2: Sales Funnel + Pipeline Progression */}
+        {/* Analytics Row 2 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <Card>
             <CardHeader>
               <div>
                 <CardTitle>Sales Funnel</CardTitle>
-                <p className="text-[12px] text-[#667085]">
-                  Stage-by-stage distribution across active pipeline
-                </p>
+                <p className="text-[12px] text-[#71717A]">Opportunities by stage</p>
               </div>
               <Link href="/pipeline" className="text-[12px] font-medium text-[#635BFF] hover:underline">
                 Open Pipeline →
               </Link>
             </CardHeader>
-            <CardContent className="h-[220px]">
+            <CardContent className="h-[210px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={funnelData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E4E7EC" vertical={false} />
-                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#667085" }} axisLine={false} tickLine={false} />
-                  <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: "#667085" }} axisLine={false} tickLine={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E4E4E7" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#71717A" }} axisLine={false} tickLine={false} />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: "#71717A" }} axisLine={false} tickLine={false} />
                   <Tooltip
                     contentStyle={{
                       borderRadius: "8px",
-                      border: "1px solid #E4E7EC",
+                      border: "1px solid #E4E4E7",
                       fontSize: "12px",
                     }}
                   />
-                  <Bar dataKey="count" name="Opportunities" radius={[6, 6, 0, 0]} barSize={28}>
+                  <Bar dataKey="count" name="Opportunities" radius={[4, 4, 0, 0]} barSize={24} isAnimationActive={false}>
                     {funnelData.map((entry) => (
                       <Cell key={entry.name} fill={entry.color} />
                     ))}
@@ -404,19 +355,16 @@ export default function DashboardPage() {
             <CardHeader>
               <div>
                 <CardTitle>Pipeline Value Progression</CardTitle>
-                <p className="text-[12px] text-[#667085]">
-                  Estimated opportunity volume ({dateRange})
-                </p>
+                <p className="text-[12px] text-[#71717A]">Estimated opportunity volume ({dateRange})</p>
               </div>
-              <TrendingUp className="h-4 w-4 text-[#12B76A]" />
             </CardHeader>
-            <CardContent className="h-[220px]">
+            <CardContent className="h-[210px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={ACQUISITION_DATA[dateRange]}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E4E7EC" vertical={false} />
-                  <XAxis dataKey="day" tick={{ fontSize: 12, fill: "#667085" }} axisLine={false} tickLine={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E4E4E7" vertical={false} />
+                  <XAxis dataKey="day" tick={{ fontSize: 12, fill: "#71717A" }} axisLine={false} tickLine={false} />
                   <YAxis
-                    tick={{ fontSize: 11, fill: "#667085" }}
+                    tick={{ fontSize: 11, fill: "#71717A" }}
                     axisLine={false}
                     tickLine={false}
                     tickFormatter={(v) => `₹${Math.round(v / 1000)}k`}
@@ -425,7 +373,7 @@ export default function DashboardPage() {
                     formatter={(val) => formatCurrency(Number(val))}
                     contentStyle={{
                       borderRadius: "8px",
-                      border: "1px solid #E4E7EC",
+                      border: "1px solid #E4E4E7",
                       fontSize: "12px",
                     }}
                   />
@@ -433,9 +381,10 @@ export default function DashboardPage() {
                     type="monotone"
                     dataKey="pipeline"
                     name="Pipeline Value"
-                    stroke="#2E90FA"
-                    strokeWidth={2}
-                    fill="#EFF8FF"
+                    stroke="#2563EB"
+                    strokeWidth={1.75}
+                    fill="#EFF6FF"
+                    isAnimationActive={false}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -443,133 +392,107 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Action-oriented workspace */}
+        {/* Actionable Workspace */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* Follow-ups Due Today & Overdue */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-[#635BFF]" />
-                Follow-ups Priority
-              </CardTitle>
-              <Link href="/follow-ups" className="text-[12px] font-medium text-[#635BFF] hover:underline">
-                View all
-              </Link>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {overdue.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-[#F04438] flex items-center gap-1">
-                    <AlertCircle className="h-3.5 w-3.5" />
-                    Overdue ({overdue.length})
-                  </p>
-                  {overdue.map((task) => (
-                    <Link
-                      key={task.id}
-                      href={`/leads/${task.leadId}`}
-                      className="block rounded-[8px] border border-[#FDA29B] bg-[#FEF3F2]/50 p-2.5 hover:bg-[#FEF3F2]"
-                    >
-                      <div className="flex items-center justify-between">
-                        <p className="text-[13px] font-medium text-[#101828]">{task.title}</p>
-                        <Badge variant="error">Overdue</Badge>
-                      </div>
-                      <p className="text-[12px] text-[#667085] mt-0.5">
-                        {task.leadName} • {task.dueDate} {task.dueTime}
-                      </p>
-                    </Link>
-                  ))}
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-[#667085]">
-                  Due Today ({dueToday.length})
-                </p>
-                {dueToday.map((task) => (
-                  <Link
-                    key={task.id}
-                    href={`/leads/${task.leadId}`}
-                    className="block rounded-[8px] border border-[#E4E7EC] p-2.5 hover:bg-[#F8F9FC]"
-                  >
-                    <div className="flex items-center justify-between">
-                      <p className="text-[13px] font-medium text-[#101828]">{task.title}</p>
-                      <span className="text-[11px] font-medium text-[#635BFF] tabular-nums">
-                        {task.dueTime}
-                      </span>
-                    </div>
-                    <p className="text-[12px] text-[#667085] mt-0.5">
-                      {task.leadName} • {task.company}
-                    </p>
+            <CardHeader className="border-b border-[#E4E4E7]">
+              <SectionHeader
+                title="Follow-ups Priority"
+                action={
+                  <Link href="/follow-ups" className="text-[12px] font-medium text-[#635BFF] hover:underline">
+                    View all
                   </Link>
-                ))}
-              </div>
-            </CardContent>
+                }
+              />
+            </CardHeader>
+            <div className="divide-y divide-[#E4E4E7]">
+              {overdue.map((task) => (
+                <Link
+                  key={task.id}
+                  href={`/leads/${task.leadId}`}
+                  className="flex items-center justify-between px-5 py-3 hover:bg-[#F7F7F8]"
+                >
+                  <div className="min-w-0 pr-2">
+                    <p className="truncate text-[13px] font-medium text-[#18181B]">{task.title}</p>
+                    <p className="truncate text-[12px] text-[#71717A]">
+                      {task.leadName} · {task.dueDate} {task.dueTime}
+                    </p>
+                  </div>
+                  <StatusIndicator color="#DC2626" label="Overdue" />
+                </Link>
+              ))}
+              {dueToday.map((task) => (
+                <Link
+                  key={task.id}
+                  href={`/leads/${task.leadId}`}
+                  className="flex items-center justify-between px-5 py-3 hover:bg-[#F7F7F8]"
+                >
+                  <div className="min-w-0 pr-2">
+                    <p className="truncate text-[13px] font-medium text-[#18181B]">{task.title}</p>
+                    <p className="truncate text-[12px] text-[#71717A]">
+                      {task.leadName} · {task.company}
+                    </p>
+                  </div>
+                  <span className="text-[12px] font-medium text-[#52525B] tabular-nums shrink-0">
+                    {task.dueTime}
+                  </span>
+                </Link>
+              ))}
+            </div>
           </Card>
 
-          {/* New Incoming & Immediate Attention */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Flame className="h-4 w-4 text-[#F79009]" />
-                {viewRole === "admin" ? "New & Attention Needed" : "My Priority Leads"}
-              </CardTitle>
-              <Link href="/leads" className="text-[12px] font-medium text-[#635BFF] hover:underline">
-                Leads table
-              </Link>
+            <CardHeader className="border-b border-[#E4E4E7]">
+              <SectionHeader
+                title={viewRole === "admin" ? "New & Attention Needed" : "Priority Leads"}
+                action={
+                  <Link href="/leads" className="text-[12px] font-medium text-[#635BFF] hover:underline">
+                    Leads table
+                  </Link>
+                }
+              />
             </CardHeader>
-            <CardContent className="space-y-2.5">
+            <div className="divide-y divide-[#E4E4E7]">
               {(incomingLeads.length > 0 ? incomingLeads : attentionLeads).map((lead) => (
                 <Link
                   key={lead.id}
                   href={`/leads/${lead.id}`}
-                  className="flex items-center justify-between rounded-[8px] border border-[#E4E7EC] p-2.5 hover:bg-[#F8F9FC]"
+                  className="flex items-center justify-between px-5 py-3 hover:bg-[#F7F7F8]"
                 >
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="truncate text-[13px] font-medium text-[#101828]">
-                        {lead.name}
-                      </p>
-                      {!lead.assignedTo && <Badge variant="warning">Unassigned</Badge>}
-                    </div>
-                    <p className="truncate text-[12px] text-[#667085]">
-                      {lead.company} • {lead.source}
+                  <div className="min-w-0 pr-2">
+                    <p className="truncate text-[13px] font-medium text-[#18181B]">{lead.name}</p>
+                    <p className="truncate text-[12px] text-[#71717A]">
+                      {lead.company} · {lead.source}
                     </p>
                   </div>
-                  <div className="text-right shrink-0 ml-2">
-                    <p className="text-[13px] font-semibold text-[#101828] tabular-nums">
+                  <div className="text-right shrink-0">
+                    <p className="text-[13px] font-semibold text-[#18181B] tabular-nums">
                       {formatCurrency(lead.estimatedValue)}
                     </p>
-                    <p className="text-[11px] text-[#98A2B3] capitalize">{lead.priority}</p>
+                    <p className="text-[11px] text-[#71717A] capitalize">
+                      {!lead.assignedTo ? "Unassigned" : lead.priority}
+                    </p>
                   </div>
                 </Link>
               ))}
-            </CardContent>
+            </div>
           </Card>
 
-          {/* Top Reps (Admin) or Recent Activity */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                {viewRole === "admin" ? (
-                  <>
-                    <Users className="h-4 w-4 text-[#12B76A]" />
-                    Top Sales Representatives
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle2 className="h-4 w-4 text-[#12B76A]" />
-                    Recent Customer Activity
-                  </>
-                )}
-              </CardTitle>
-              <Link
-                href={viewRole === "admin" ? "/team" : "/leads"}
-                className="text-[12px] font-medium text-[#635BFF] hover:underline"
-              >
-                {viewRole === "admin" ? "Team" : "Explore"}
-              </Link>
+            <CardHeader className="border-b border-[#E4E4E7]">
+              <SectionHeader
+                title={viewRole === "admin" ? "Top Sales Representatives" : "Recent Activity"}
+                action={
+                  <Link
+                    href={viewRole === "admin" ? "/team" : "/leads"}
+                    className="text-[12px] font-medium text-[#635BFF] hover:underline"
+                  >
+                    {viewRole === "admin" ? "Team" : "Explore"}
+                  </Link>
+                }
+              />
             </CardHeader>
-            <CardContent className="space-y-2.5">
+            <div className="divide-y divide-[#E4E4E7]">
               {viewRole === "admin"
                 ? [...team]
                     .sort((a, b) => b.revenueWon - a.revenueWon)
@@ -577,25 +500,20 @@ export default function DashboardPage() {
                     .map((rep) => (
                       <div
                         key={rep.id}
-                        className="flex items-center justify-between rounded-[8px] border border-[#E4E7EC] p-2.5"
+                        className="flex items-center justify-between px-5 py-3"
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
-                          <div
-                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold text-white"
-                            style={{ backgroundColor: rep.avatarColor }}
-                          >
-                            {getInitials(rep.name)}
-                          </div>
+                          <Avatar name={rep.name} color={rep.avatarColor} size="md" />
                           <div className="min-w-0">
-                            <p className="truncate text-[13px] font-medium text-[#101828]">
+                            <p className="truncate text-[13px] font-medium text-[#18181B]">
                               {rep.name}
                             </p>
-                            <p className="text-[11px] text-[#667085]">
-                              {rep.dealsWon} deals won • {rep.avgResponseMins}m avg resp
+                            <p className="text-[12px] text-[#71717A] tabular-nums">
+                              {rep.dealsWon} deals · {rep.avgResponseMins}m resp
                             </p>
                           </div>
                         </div>
-                        <p className="text-[13px] font-semibold text-[#101828] tabular-nums">
+                        <p className="text-[13px] font-semibold text-[#18181B] tabular-nums shrink-0">
                           {formatCurrency(rep.revenueWon)}
                         </p>
                       </div>
@@ -604,15 +522,15 @@ export default function DashboardPage() {
                     <Link
                       key={act.id}
                       href={`/leads/${act.leadId}`}
-                      className="block rounded-[8px] border border-[#E4E7EC] p-2.5 hover:bg-[#F8F9FC]"
+                      className="block px-5 py-3 hover:bg-[#F7F7F8]"
                     >
-                      <p className="text-[13px] font-medium text-[#101828]">{act.title}</p>
-                      <p className="text-[12px] text-[#667085] line-clamp-1 mt-0.5">
+                      <p className="text-[13px] font-medium text-[#18181B]">{act.title}</p>
+                      <p className="text-[12px] text-[#71717A] line-clamp-1 mt-0.5">
                         {act.description}
                       </p>
                     </Link>
                   ))}
-            </CardContent>
+            </div>
           </Card>
         </div>
       </div>

@@ -3,8 +3,9 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/ui/page-header";
+import { StatusIndicator } from "@/components/ui/primitives";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useCrmStore } from "@/store/useCrmStore";
 
 type CalView = "daily" | "weekly" | "monthly" | "agenda";
@@ -34,114 +35,114 @@ export default function CalendarPage() {
 
   return (
     <AppShell>
-      <div className="space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-[#101828]">
-              Calendar
-            </h1>
-            <p className="text-[13px] text-[#667085]">
-              November 2026 • Synchronized with your follow-ups and calls
-            </p>
-          </div>
-          <div className="inline-flex rounded-[8px] border border-[#E4E7EC] bg-white p-0.5">
-            {(["daily", "weekly", "monthly", "agenda"] as const).map((v) => (
-              <button
-                key={v}
-                onClick={() => setView(v)}
-                className={`rounded-[6px] px-3 py-1.5 text-[12px] font-medium capitalize cursor-pointer ${
-                  view === v
-                    ? "bg-[#EFEDFF] text-[#635BFF]"
-                    : "text-[#667085] hover:text-[#101828]"
-                }`}
-              >
-                {v}
-              </button>
-            ))}
-          </div>
-        </div>
+      <div className="space-y-4">
+        <PageHeader
+          title="Calendar"
+          description="November 2026 · Synchronized with follow-ups and scheduled calls"
+          actions={
+            <div className="inline-flex rounded-[6px] border border-[#E4E4E7] bg-[#F7F7F8] p-0.5">
+              {(["daily", "weekly", "monthly", "agenda"] as const).map((v) => (
+                <button
+                  key={v}
+                  onClick={() => setView(v)}
+                  className={`rounded-[4px] px-2.5 py-1 text-[12px] font-medium capitalize cursor-pointer transition-colors ${
+                    view === v
+                      ? "bg-white text-[#18181B] shadow-[0_1px_2px_rgba(24,24,27,0.06)]"
+                      : "text-[#71717A] hover:text-[#18181B]"
+                  }`}
+                >
+                  {v}
+                </button>
+              ))}
+            </div>
+          }
+        />
 
         {view === "daily" && (
-          <Card className="p-5 space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-[16px] font-semibold text-[#101828]">
+          <Card className="p-4 space-y-3">
+            <div className="flex items-center justify-between border-b border-[#E4E4E7] pb-3">
+              <h2 className="text-[14px] font-semibold text-[#18181B]">
                 Schedule for {selectedDate}
               </h2>
               <input
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="h-8 rounded-[6px] border border-[#E4E7EC] px-2 text-[12px]"
+                className="h-8 rounded-[6px] border border-[#E4E4E7] px-2 text-[12px]"
               />
             </div>
-            {followUps
-              .filter((f) => f.dueDate === selectedDate)
-              .map((f) => (
-                <Link
-                  key={f.id}
-                  href={`/leads/${f.leadId}`}
-                  className="flex items-center justify-between rounded-[8px] border border-[#E4E7EC] p-3 hover:bg-[#F8F9FC]"
-                >
-                  <div>
-                    <p className="text-[13px] font-medium text-[#101828]">{f.title}</p>
-                    <p className="text-[12px] text-[#667085]">
-                      {f.leadName} • {f.company}
-                    </p>
-                  </div>
-                  <Badge variant={f.status === "completed" ? "success" : "primary"}>
-                    {f.dueTime}
-                  </Badge>
-                </Link>
-              ))}
+            <div className="divide-y divide-[#E4E4E7]">
+              {followUps
+                .filter((f) => f.dueDate === selectedDate)
+                .map((f) => (
+                  <Link
+                    key={f.id}
+                    href={`/leads/${f.leadId}`}
+                    className="flex items-center justify-between py-3 hover:bg-[#F7F7F8] px-2 rounded-[6px]"
+                  >
+                    <div>
+                      <p className="text-[13px] font-medium text-[#18181B]">{f.title}</p>
+                      <p className="text-[12px] text-[#71717A]">
+                        {f.leadName} · {f.company}
+                      </p>
+                    </div>
+                    <span className="text-[12px] font-medium text-[#52525B] tabular-nums">
+                      {f.dueTime}
+                    </span>
+                  </Link>
+                ))}
+            </div>
           </Card>
         )}
 
         {view === "weekly" && (
-          <div className="grid grid-cols-1 md:grid-cols-7 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-7 gap-2.5">
             {weekDates.map((date) => {
               const items = followUps.filter((f) => f.dueDate === date);
               const isToday = date === "2026-11-25";
               return (
-                <Card
+                <div
                   key={date}
-                  className={`p-3 min-h-[220px] ${
-                    isToday ? "border-[#635BFF] ring-1 ring-[#635BFF]/20" : ""
+                  className={`rounded-[8px] border bg-white p-3 min-h-[240px] flex flex-col ${
+                    isToday ? "border-[#635BFF]" : "border-[#E4E4E7]"
                   }`}
                 >
-                  <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#E4E7EC]">
-                    <span className="text-[12px] font-semibold text-[#101828] tabular-nums">
+                  <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#E4E4E7]">
+                    <span className="text-[12px] font-semibold text-[#18181B] tabular-nums">
                       {date.slice(5)}
                     </span>
-                    {isToday && <Badge variant="primary">Today</Badge>}
+                    {isToday && (
+                      <span className="text-[11px] font-medium text-[#635BFF]">Today</span>
+                    )}
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1.5 flex-1">
                     {items.map((item) => (
                       <Link
                         key={item.id}
                         href={`/leads/${item.leadId}`}
-                        className="block rounded-[6px] border border-[#E4E7EC] bg-[#F8F9FC] p-2 hover:border-[#635BFF]"
+                        className="block rounded-[6px] border border-[#E4E4E7] bg-[#FAFAFA] p-2 hover:border-[#D4D4D8] hover:bg-white transition-colors"
                       >
-                        <p className="text-[11px] font-semibold text-[#635BFF] tabular-nums">
+                        <p className="text-[11px] font-medium text-[#635BFF] tabular-nums">
                           {item.dueTime}
                         </p>
-                        <p className="text-[12px] font-medium text-[#101828] line-clamp-2">
+                        <p className="text-[12px] font-medium text-[#18181B] line-clamp-2">
                           {item.title}
                         </p>
-                        <p className="text-[11px] text-[#667085] truncate">
+                        <p className="text-[11px] text-[#71717A] truncate">
                           {item.leadName}
                         </p>
                       </Link>
                     ))}
                   </div>
-                </Card>
+                </div>
               );
             })}
           </div>
         )}
 
         {view === "monthly" && (
-          <Card className="p-4">
-            <div className="grid grid-cols-7 gap-2">
+          <Card className="p-3">
+            <div className="grid grid-cols-7 gap-1.5">
               {NOV_DAYS.map((date) => {
                 const count = followUps.filter((f) => f.dueDate === date).length;
                 const isToday = date === "2026-11-25";
@@ -152,17 +153,19 @@ export default function CalendarPage() {
                       setSelectedDate(date);
                       setView("daily");
                     }}
-                    className={`rounded-[8px] border p-2.5 text-left min-h-[76px] hover:border-[#635BFF] cursor-pointer ${
-                      isToday ? "border-[#635BFF] bg-[#EFEDFF]/40" : "border-[#E4E7EC]"
+                    className={`rounded-[6px] border p-2.5 text-left h-[82px] hover:border-[#D4D4D8] cursor-pointer flex flex-col justify-between ${
+                      isToday
+                        ? "border-[#635BFF] bg-[#EFEDFF]/30"
+                        : "border-[#E4E4E7] bg-white"
                     }`}
                   >
-                    <span className="text-[12px] font-semibold text-[#101828] tabular-nums">
+                    <span className="text-[12px] font-medium text-[#18181B] tabular-nums">
                       {date.slice(8)}
                     </span>
                     {count > 0 && (
-                      <p className="mt-1.5 text-[11px] font-medium text-[#635BFF]">
+                      <span className="text-[11px] font-medium text-[#635BFF] truncate">
                         {count} task{count > 1 ? "s" : ""}
-                      </p>
+                      </span>
                     )}
                   </button>
                 );
@@ -172,38 +175,38 @@ export default function CalendarPage() {
         )}
 
         {view === "agenda" && (
-          <Card className="divide-y divide-[#E4E7EC]">
+          <Card className="divide-y divide-[#E4E4E7]">
             {[...followUps]
               .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
               .map((f) => (
                 <Link
                   key={f.id}
                   href={`/leads/${f.leadId}`}
-                  className="flex items-center justify-between px-5 py-3.5 hover:bg-[#F8F9FC]"
+                  className="flex items-center justify-between px-4 py-3 hover:bg-[#F7F7F8]"
                 >
-                  <div className="flex items-center gap-4">
-                    <span className="text-[12px] font-medium text-[#667085] tabular-nums w-24">
+                  <div className="flex items-center gap-4 min-w-0">
+                    <span className="text-[12px] font-medium text-[#71717A] tabular-nums w-24 shrink-0">
                       {f.dueDate}
                     </span>
-                    <div>
-                      <p className="text-[13px] font-medium text-[#101828]">{f.title}</p>
-                      <p className="text-[12px] text-[#667085]">
-                        {f.leadName} • {f.company}
+                    <div className="min-w-0">
+                      <p className="text-[13px] font-medium text-[#18181B] truncate">
+                        {f.title}
+                      </p>
+                      <p className="text-[12px] text-[#71717A] truncate">
+                        {f.leadName} · {f.company}
                       </p>
                     </div>
                   </div>
-                  <Badge
-                    variant={
+                  <StatusIndicator
+                    color={
                       f.status === "completed"
-                        ? "success"
+                        ? "#16A34A"
                         : f.status === "overdue"
-                        ? "error"
-                        : "info"
+                        ? "#DC2626"
+                        : "#2563EB"
                     }
-                    className="capitalize"
-                  >
-                    {f.status}
-                  </Badge>
+                    label={f.status}
+                  />
                 </Link>
               ))}
           </Card>

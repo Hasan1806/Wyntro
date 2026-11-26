@@ -5,18 +5,21 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Plus,
-  Workflow as WorkflowIcon,
   Play,
   ArrowRight,
   Zap,
   GitBranch,
   Cog,
-  CheckCircle2,
   Clock,
-  Sparkles,
   Search,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/ui/page-header";
+import {
+  MetricCard,
+  SectionHeader,
+  StatusIndicator,
+} from "@/components/ui/primitives";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -39,7 +42,7 @@ const BLUEPRINTS: {
     name: "Speed-to-Lead: Meta & Google Ads",
     category: "Lead Routing",
     description:
-      "Instantly routes ad leads, creates a 15-minute call task, and logs a simulated WhatsApp welcome.",
+      "Routes ad leads, creates a 15-minute call task, and logs a simulated WhatsApp welcome.",
     nodes: [
       { id: "b1-1", category: "trigger", kind: "new_lead_created", label: "New lead created", config: { source: "Facebook Ads" } },
       { id: "b1-2", category: "condition", kind: "lead_source", label: "Source is Facebook or Google Ads", config: { value: "Facebook Ads" } },
@@ -52,7 +55,7 @@ const BLUEPRINTS: {
     name: "Proposal Sent 48h Follow-up",
     category: "Deal Velocity",
     description:
-      "Waits 48 hours after a proposal is sent, then schedules a high-priority check-in call.",
+      "Waits 48 hours after a proposal is sent, then schedules a check-in call.",
     nodes: [
       { id: "b2-1", category: "trigger", kind: "stage_changed", label: "Stage changed to Proposal Sent", config: { value: "Proposal Sent" } },
       { id: "b2-2", category: "action", kind: "wait_duration", label: "Wait 48 hours", config: { value: "48 hours" } },
@@ -168,79 +171,59 @@ export default function AutomationsPage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-[#101828]">
-              Automation Studio
-            </h1>
-            <p className="text-[13px] text-[#667085]">
-              Build visual trigger-condition-action workflows with deterministic local simulation
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="primary">
-              <Sparkles className="h-3 w-3" />
-              Simulated Execution Engine
-            </Badge>
+        <PageHeader
+          title="Workflows"
+          description="Trigger-condition-action automation with deterministic local simulation"
+          actions={
             <Button size="sm" onClick={handleCreateWorkflow}>
               <Plus className="h-3.5 w-3.5" />
               New Workflow
             </Button>
-          </div>
-        </div>
+          }
+        />
 
-        {/* KPI Strip */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="p-4">
-            <p className="text-[12px] text-[#667085]">Active Workflows</p>
-            <p className="mt-1.5 text-[28px] font-semibold text-[#101828] tabular-nums">
-              {activeCount}
-              <span className="text-[14px] font-normal text-[#98A2B3]">
-                /{workflows.length}
-              </span>
-            </p>
-          </Card>
-          <Card className="p-4">
-            <p className="text-[12px] text-[#667085]">Total Simulated Runs</p>
-            <p className="mt-1.5 text-[28px] font-semibold text-[#635BFF] tabular-nums">
-              {totalRuns}
-            </p>
-          </Card>
-          <Card className="p-4">
-            <p className="text-[12px] text-[#667085]">Est. Time Saved</p>
-            <p className="mt-1.5 text-[28px] font-semibold text-[#101828] tabular-nums">
-              {Math.round(totalRuns * 0.18)}h
-            </p>
-          </Card>
-          <Card className="p-4">
-            <p className="text-[12px] text-[#667085]">Simulation Success</p>
-            <p className="mt-1.5 text-[28px] font-semibold text-[#12B76A] tabular-nums">
-              99.2%
-            </p>
-          </Card>
+          <MetricCard
+            label="Active Workflows"
+            value={`${activeCount}/${workflows.length}`}
+            sublabel="configured automations"
+          />
+          <MetricCard
+            label="Simulated Runs"
+            value={String(totalRuns)}
+            sublabel="deterministic local"
+          />
+          <MetricCard
+            label="Est. Time Saved"
+            value={`${Math.round(totalRuns * 0.18)}h`}
+            sublabel="manual triage avoided"
+          />
+          <MetricCard
+            label="Simulation Success"
+            value="99.2%"
+            sublabel="zero validation errors"
+          />
         </div>
 
-        {/* Search & Filter */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-2.5">
           <div className="relative w-full sm:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#98A2B3]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#A1A1AA]" />
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search workflows..."
-              className="pl-9"
+              className="pl-8.5 h-9"
             />
           </div>
-          <div className="inline-flex rounded-[8px] border border-[#E4E7EC] bg-white p-0.5">
+          <div className="inline-flex rounded-[6px] border border-[#E4E4E7] bg-[#F7F7F8] p-0.5">
             {(["all", "active", "draft"] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setStatusFilter(tab)}
-                className={`rounded-[6px] px-3 py-1 text-[12px] font-medium capitalize cursor-pointer ${
+                className={`rounded-[4px] px-2.5 py-1 text-[12px] font-medium capitalize cursor-pointer ${
                   statusFilter === tab
-                    ? "bg-[#EFEDFF] text-[#635BFF]"
-                    : "text-[#667085] hover:text-[#101828]"
+                    ? "bg-white text-[#18181B] shadow-[0_1px_2px_rgba(24,24,27,0.06)]"
+                    : "text-[#71717A] hover:text-[#18181B]"
                 }`}
               >
                 {tab}
@@ -249,7 +232,6 @@ export default function AutomationsPage() {
           </div>
         </div>
 
-        {/* Workflows with Mini Visual Flow */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {filteredWorkflows.map((wf) => {
             const hasTrigger = wf.nodes.some((n) => n.category === "trigger");
@@ -257,24 +239,19 @@ export default function AutomationsPage() {
             const isValid = hasTrigger && hasAction;
 
             return (
-              <Card key={wf.id} className="p-5 space-y-4 flex flex-col justify-between">
-                <div className="space-y-4">
+              <Card key={wf.id} className="p-4 space-y-3.5 flex flex-col justify-between">
+                <div className="space-y-3">
                   <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-[#EFEDFF] text-[#635BFF]">
-                        <WorkflowIcon className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <Link
-                          href={`/automations/${wf.id}`}
-                          className="text-[15px] font-semibold text-[#101828] hover:text-[#635BFF]"
-                        >
-                          {wf.name}
-                        </Link>
-                        <p className="text-[12px] text-[#667085] mt-0.5">
-                          {wf.description}
-                        </p>
-                      </div>
+                    <div className="min-w-0">
+                      <Link
+                        href={`/automations/${wf.id}`}
+                        className="text-[14px] font-semibold text-[#18181B] hover:text-[#635BFF]"
+                      >
+                        {wf.name}
+                      </Link>
+                      <p className="text-[12px] text-[#71717A] mt-0.5">
+                        {wf.description}
+                      </p>
                     </div>
                     <Switch
                       checked={wf.enabled}
@@ -292,8 +269,8 @@ export default function AutomationsPage() {
                     />
                   </div>
 
-                  {/* Mini Visual Node Flow */}
-                  <div className="rounded-[10px] border border-[#E4E7EC] bg-[#F8F9FC] p-3 overflow-x-auto">
+                  {/* Compact Node Chain */}
+                  <div className="rounded-[6px] border border-[#E4E4E7] bg-[#F7F7F8] p-2.5 overflow-x-auto">
                     <div className="flex items-center gap-1.5 min-w-max">
                       {wf.nodes.map((node, idx) => {
                         const Icon =
@@ -302,22 +279,20 @@ export default function AutomationsPage() {
                             : node.category === "condition"
                             ? GitBranch
                             : Cog;
-                        const pillColor =
+                        const dotColor =
                           node.category === "trigger"
-                            ? "border-[#635BFF]/30 bg-[#EFEDFF] text-[#5148E5]"
+                            ? "text-[#635BFF]"
                             : node.category === "condition"
-                            ? "border-[#F79009]/30 bg-[#FFFAEB] text-[#B54708]"
-                            : "border-[#12B76A]/30 bg-[#ECFDF3] text-[#027A48]";
+                            ? "text-[#D97706]"
+                            : "text-[#16A34A]";
                         return (
                           <div key={node.id} className="flex items-center gap-1.5">
-                            <span
-                              className={`inline-flex items-center gap-1 rounded-[6px] border px-2 py-1 text-[11px] font-medium ${pillColor}`}
-                            >
-                              <Icon className="h-3 w-3 shrink-0" />
+                            <span className="inline-flex items-center gap-1 rounded-[5px] border border-[#E4E4E7] bg-white px-2 py-1 text-[11px] font-medium text-[#18181B]">
+                              <Icon className={`h-3 w-3 shrink-0 ${dotColor}`} />
                               <span className="max-w-[130px] truncate">{node.label}</span>
                             </span>
                             {idx < wf.nodes.length - 1 && (
-                              <ArrowRight className="h-3 w-3 text-[#98A2B3] shrink-0" />
+                              <ArrowRight className="h-3 w-3 text-[#A1A1AA] shrink-0" />
                             )}
                           </div>
                         );
@@ -326,12 +301,13 @@ export default function AutomationsPage() {
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-[#E4E7EC]">
-                  <div className="flex items-center gap-2 text-[12px]">
-                    <Badge variant={wf.enabled ? "success" : "default"}>
-                      {wf.enabled ? "Active (Simulated)" : "Draft"}
-                    </Badge>
-                    <span className="text-[#667085] tabular-nums flex items-center gap-1">
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-[#E4E4E7]">
+                  <div className="flex items-center gap-3 text-[12px]">
+                    <StatusIndicator
+                      color={wf.enabled ? "#16A34A" : "#71717A"}
+                      label={wf.enabled ? "Active (Simulated)" : "Draft"}
+                    />
+                    <span className="text-[#71717A] tabular-nums flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       {wf.runsCount} runs
                     </span>
@@ -351,13 +327,13 @@ export default function AutomationsPage() {
                       }}
                       disabled={!isValid}
                     >
-                      <Play className="h-3.5 w-3.5" />
-                      Test Run
+                      <Play className="h-3 w-3" />
+                      Test
                     </Button>
                     <Button size="sm" variant="soft" asChild>
                       <Link href={`/automations/${wf.id}`}>
-                        Open Builder
-                        <ArrowRight className="h-3.5 w-3.5" />
+                        Edit
+                        <ArrowRight className="h-3 w-3" />
                       </Link>
                     </Button>
                   </div>
@@ -367,33 +343,28 @@ export default function AutomationsPage() {
           })}
         </div>
 
-        {/* Pre-Built Blueprints Gallery */}
         <div className="space-y-3 pt-2">
-          <div>
-            <h2 className="text-[18px] font-semibold text-[#101828]">
-              Automation Blueprints
-            </h2>
-            <p className="text-[12px] text-[#667085]">
-              Start faster with pre-configured CRM workflows — customize any node in the visual studio.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+          <SectionHeader
+            title="Automation Blueprints"
+            description="Pre-configured CRM workflows you can customize in the builder"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
             {BLUEPRINTS.map((bp) => (
               <Card
                 key={bp.id}
-                className="p-4 flex flex-col justify-between hover:border-[#635BFF]/50 transition-colors"
+                className="p-4 flex flex-col justify-between hover:border-[#D4D4D8] transition-colors"
               >
                 <div>
                   <div className="flex items-center justify-between">
                     <Badge variant="outline">{bp.category}</Badge>
-                    <span className="text-[11px] text-[#98A2B3]">
+                    <span className="text-[11px] text-[#A1A1AA] tabular-nums">
                       {bp.nodes.length} nodes
                     </span>
                   </div>
-                  <h3 className="mt-2.5 text-[14px] font-semibold text-[#101828]">
+                  <h3 className="mt-2.5 text-[14px] font-semibold text-[#18181B]">
                     {bp.name}
                   </h3>
-                  <p className="mt-1 text-[12px] text-[#667085] leading-relaxed">
+                  <p className="mt-1 text-[12px] text-[#71717A] leading-[18px]">
                     {bp.description}
                   </p>
                 </div>
@@ -411,39 +382,33 @@ export default function AutomationsPage() {
           </div>
         </div>
 
-        {/* Simulated Execution History */}
         <div className="space-y-3 pt-2">
-          <h2 className="text-[18px] font-semibold text-[#101828]">
-            Recent Simulated Executions
-          </h2>
+          <SectionHeader title="Recent Simulated Executions" />
           <Card className="overflow-x-auto">
             <table className="w-full text-left text-[13px]">
-              <thead className="border-b border-[#E4E7EC] bg-[#F8F9FC] text-[12px] font-medium text-[#667085]">
+              <thead className="h-10 border-b border-[#E4E4E7] bg-[#F7F7F8] text-[12px] font-medium text-[#52525B]">
                 <tr>
-                  <th className="px-4 py-2.5">Status</th>
-                  <th className="px-4 py-2.5">Workflow</th>
-                  <th className="px-4 py-2.5">Lead</th>
-                  <th className="px-4 py-2.5">Summary</th>
-                  <th className="px-4 py-2.5">Timestamp</th>
+                  <th className="px-4">Status</th>
+                  <th className="px-4">Workflow</th>
+                  <th className="px-4">Lead</th>
+                  <th className="px-4">Summary</th>
+                  <th className="px-4 text-right">Timestamp</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E4E7EC]">
+              <tbody className="divide-y divide-[#E4E4E7]">
                 {allExecutions.slice(0, 6).map((ex) => (
-                  <tr key={ex.id} className="hover:bg-[#F8F9FC]">
-                    <td className="px-4 py-2.5">
-                      <Badge variant="success">
-                        <CheckCircle2 className="h-3 w-3" />
-                        Simulated OK
-                      </Badge>
+                  <tr key={ex.id} className="h-11 hover:bg-[#F7F7F8]">
+                    <td className="px-4">
+                      <StatusIndicator color="#16A34A" label="Simulated OK" />
                     </td>
-                    <td className="px-4 py-2.5 font-medium text-[#101828]">
+                    <td className="px-4 font-medium text-[#18181B]">
                       {ex.workflowName}
                     </td>
-                    <td className="px-4 py-2.5 text-[#344054]">{ex.leadName}</td>
-                    <td className="px-4 py-2.5 text-[#667085] max-w-md truncate">
+                    <td className="px-4 text-[#52525B]">{ex.leadName}</td>
+                    <td className="px-4 text-[#71717A] max-w-md truncate">
                       {ex.summary}
                     </td>
-                    <td className="px-4 py-2.5 text-[12px] text-[#98A2B3] tabular-nums">
+                    <td className="px-4 text-right text-[12px] text-[#A1A1AA] tabular-nums whitespace-nowrap">
                       {ex.executedAt.slice(0, 16).replace("T", " ")}
                     </td>
                   </tr>

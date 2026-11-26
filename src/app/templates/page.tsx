@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import { Plus, Copy, Trash2, Search } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/ui/page-header";
+import { StatusIndicator } from "@/components/ui/primitives";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input, Textarea } from "@/components/ui/input";
@@ -63,36 +65,32 @@ export default function TemplatesPage() {
 
   return (
     <AppShell>
-      <div className="space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-[#101828]">
-              Message Templates
-            </h1>
-            <p className="text-[13px] text-[#667085]">
-              Reusable multi-channel snippets with dynamic personalization placeholders
-            </p>
-          </div>
-          <Button size="sm" onClick={() => setCreateOpen(true)}>
-            <Plus className="h-3.5 w-3.5" />
-            New Template
-          </Button>
-        </div>
+      <div className="space-y-4">
+        <PageHeader
+          title="Message Templates"
+          description="Reusable multi-channel snippets with dynamic personalization"
+          actions={
+            <Button size="sm" onClick={() => setCreateOpen(true)}>
+              <Plus className="h-3.5 w-3.5" />
+              New Template
+            </Button>
+          }
+        />
 
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#98A2B3]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#A1A1AA]" />
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search templates..."
-              className="pl-9"
+              className="pl-8.5 h-9"
             />
           </div>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="h-9 rounded-[8px] border border-[#E4E7EC] bg-white px-3 text-[12px]"
+            className="h-9 rounded-[6px] border border-[#E4E4E7] bg-white px-2.5 text-[12px] text-[#18181B]"
           >
             <option value="all">All Categories</option>
             {CATEGORIES.map((c) => (
@@ -103,102 +101,107 @@ export default function TemplatesPage() {
           </select>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          <div className="lg:col-span-7 space-y-2.5">
-            {filtered.map((tpl) => (
-              <Card
-                key={tpl.id}
-                onClick={() => setSelectedId(tpl.id)}
-                className={`p-4 cursor-pointer transition-colors ${
-                  active?.id === tpl.id
-                    ? "border-[#635BFF] ring-1 ring-[#635BFF]/20"
-                    : "hover:border-[#D0D5DD]"
-                }`}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="text-[14px] font-semibold text-[#101828]">
-                        {tpl.name}
-                      </p>
-                      <Badge variant="outline" className="uppercase text-[10px]">
-                        {tpl.channel}
-                      </Badge>
-                      {tpl.whatsappStatus && (
-                        <Badge
-                          variant={
-                            tpl.whatsappStatus === "approved_simulated"
-                              ? "success"
-                              : "warning"
-                          }
-                        >
-                          {tpl.whatsappStatus === "approved_simulated"
-                            ? "Simulated Approved"
-                            : "Simulated Pending"}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+          <Card className="lg:col-span-7 divide-y divide-[#E4E4E7]">
+            {filtered.map((tpl) => {
+              const isSelected = active?.id === tpl.id;
+              return (
+                <div
+                  key={tpl.id}
+                  onClick={() => setSelectedId(tpl.id)}
+                  className={`p-4 cursor-pointer transition-colors ${
+                    isSelected ? "bg-[#F4F4F5]" : "hover:bg-[#F7F7F8]"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="text-[14px] font-semibold text-[#18181B]">
+                          {tpl.name}
+                        </p>
+                        <Badge variant="outline" className="uppercase">
+                          {tpl.channel}
                         </Badge>
-                      )}
+                        {tpl.whatsappStatus && (
+                          <StatusIndicator
+                            color={
+                              tpl.whatsappStatus === "approved_simulated"
+                                ? "#16A34A"
+                                : "#D97706"
+                            }
+                            label={
+                              tpl.whatsappStatus === "approved_simulated"
+                                ? "Simulated Approved"
+                                : "Simulated Pending"
+                            }
+                          />
+                        )}
+                      </div>
+                      <p className="text-[12px] text-[#52525B] mt-1 line-clamp-2 max-w-xl">
+                        {tpl.body}
+                      </p>
                     </div>
-                    <p className="text-[12px] text-[#667085] mt-1 line-clamp-2">
-                      {tpl.body}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        addTemplate({
-                          name: `${tpl.name} (Copy)`,
-                          category: tpl.category,
-                          channel: tpl.channel,
-                          body: tpl.body,
-                          placeholders: tpl.placeholders,
-                          whatsappStatus: tpl.whatsappStatus,
-                          whatsappCategory: tpl.whatsappCategory,
-                        });
-                        toast({ title: "Template duplicated" });
-                      }}
-                    >
-                      <Copy className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteTemplate(tpl.id);
-                        toast({ title: "Template deleted" });
-                      }}
-                    >
-                      <Trash2 className="h-3.5 w-3.5 text-[#F04438]" />
-                    </Button>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        aria-label="Duplicate template"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addTemplate({
+                            name: `${tpl.name} (Copy)`,
+                            category: tpl.category,
+                            channel: tpl.channel,
+                            body: tpl.body,
+                            placeholders: tpl.placeholders,
+                            whatsappStatus: tpl.whatsappStatus,
+                            whatsappCategory: tpl.whatsappCategory,
+                          });
+                          toast({ title: "Template duplicated" });
+                        }}
+                      >
+                        <Copy className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        aria-label="Delete template"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteTemplate(tpl.id);
+                          toast({ title: "Template deleted" });
+                        }}
+                      >
+                        <Trash2 className="h-3.5 w-3.5 text-[#DC2626]" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </Card>
-            ))}
-          </div>
+              );
+            })}
+          </Card>
 
-          {/* Live Personalized Preview */}
-          <Card className="lg:col-span-5 p-5 h-fit sticky top-20">
-            <p className="text-[13px] font-semibold text-[#101828]">
-              Live Personalized Preview
-            </p>
-            <p className="text-[11px] text-[#667085] mt-0.5">
-              Sample data: Sophia Lindqvist • NordicCloud AB
-            </p>
+          <Card className="lg:col-span-5 p-4 sticky top-20 space-y-3">
+            <div>
+              <p className="text-[13px] font-semibold text-[#18181B]">
+                Live Personalized Preview
+              </p>
+              <p className="text-[12px] text-[#71717A]">
+                Sample: Sophia Lindqvist · NordicCloud AB
+              </p>
+            </div>
             {active ? (
-              <div className="mt-4 space-y-3">
-                <div className="rounded-[10px] border border-[#E4E7EC] bg-[#F8F9FC] p-4 text-[13px] text-[#101828] whitespace-pre-wrap">
+              <div className="space-y-3">
+                <div className="rounded-[6px] border border-[#E4E4E7] bg-[#F7F7F8] p-3.5 text-[13px] leading-[20px] text-[#18181B] whitespace-pre-wrap">
                   {renderPreview(active.body)}
                 </div>
                 {active.channel === "whatsapp" && (
-                  <div className="rounded-[8px] border border-[#E4E7EC] p-3 text-[12px] space-y-1">
-                    <p className="font-medium text-[#101828]">
+                  <div className="rounded-[6px] border border-[#E4E4E7] p-3 text-[12px] space-y-1">
+                    <p className="font-medium text-[#18181B]">
                       WhatsApp Provider Metadata (Simulated)
                     </p>
-                    <p className="text-[#667085]">
-                      Category: {active.whatsappCategory ?? "UTILITY"} • Status:{" "}
+                    <p className="text-[#71717A]">
+                      Category: {active.whatsappCategory ?? "UTILITY"} · Status:{" "}
                       {active.whatsappStatus ?? "approved_simulated"}
                     </p>
                   </div>
@@ -244,7 +247,7 @@ export default function TemplatesPage() {
               <select
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value as TemplateCategory)}
-                className="h-9 rounded-[8px] border border-[#E4E7EC] px-2.5 text-[12px]"
+                className="h-[38px] rounded-[6px] border border-[#E4E4E7] px-2.5 text-[12px]"
               >
                 {CATEGORIES.map((c) => (
                   <option key={c} value={c}>
@@ -257,7 +260,7 @@ export default function TemplatesPage() {
                 onChange={(e) =>
                   setNewChannel(e.target.value as "whatsapp" | "email" | "sms")
                 }
-                className="h-9 rounded-[8px] border border-[#E4E7EC] px-2.5 text-[12px]"
+                className="h-[38px] rounded-[6px] border border-[#E4E4E7] px-2.5 text-[12px]"
               >
                 <option value="whatsapp">WhatsApp</option>
                 <option value="email">Email</option>

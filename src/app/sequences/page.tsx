@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Repeat, Plus, ArrowUp, ArrowDown, Trash2 } from "lucide-react";
+import { Plus, ArrowUp, ArrowDown, Trash2 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/ui/page-header";
+import { StatusIndicator } from "@/components/ui/primitives";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -48,55 +50,47 @@ export default function SequencesPage() {
   return (
     <AppShell>
       <div className="space-y-5">
-        <div>
-          <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-[#101828]">
-            Follow-up Sequences
-          </h1>
-          <p className="text-[13px] text-[#667085]">
-            Multi-step sales engagement cadences with automatic stop-on-reply
-          </p>
-        </div>
+        <PageHeader
+          title="Follow-up Sequences"
+          description="Multi-step sales engagement cadences with stop-on-reply"
+        />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          <div className="lg:col-span-4 space-y-2.5">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+          <Card className="lg:col-span-4 divide-y divide-[#E4E4E7]">
             {sequences.map((seq) => (
-              <Card
+              <div
                 key={seq.id}
                 onClick={() => setSelectedId(seq.id)}
-                className={`p-4 cursor-pointer ${
-                  activeSeq.id === seq.id
-                    ? "border-[#635BFF] ring-1 ring-[#635BFF]/20"
-                    : ""
+                className={`p-4 cursor-pointer transition-colors ${
+                  activeSeq.id === seq.id ? "bg-[#F4F4F5]" : "hover:bg-[#F7F7F8]"
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <p className="text-[14px] font-semibold text-[#101828]">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-[14px] font-semibold text-[#18181B]">
                     {seq.name}
                   </p>
-                  <Badge variant={seq.active ? "success" : "default"}>
-                    {seq.active ? "Active" : "Paused"}
-                  </Badge>
+                  <StatusIndicator
+                    color={seq.active ? "#16A34A" : "#71717A"}
+                    label={seq.active ? "Active" : "Paused"}
+                  />
                 </div>
-                <p className="text-[12px] text-[#667085] mt-1">{seq.description}</p>
-                <div className="mt-3 flex items-center gap-4 text-[11px] text-[#667085] tabular-nums">
+                <p className="text-[12px] text-[#71717A] mt-1">{seq.description}</p>
+                <div className="mt-2.5 flex items-center gap-4 text-[11px] text-[#52525B] tabular-nums">
                   <span>{seq.enrolledCount} enrolled</span>
                   <span>{seq.completionRate}% completion</span>
-                  <span>{seq.replyRate}% reply rate</span>
+                  <span>{seq.replyRate}% reply</span>
                 </div>
-              </Card>
-            ))}
-          </div>
-
-          <Card className="lg:col-span-8 p-5 space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E4E7EC] pb-3">
-              <div className="flex items-center gap-2">
-                <Repeat className="h-4 w-4 text-[#635BFF]" />
-                <h2 className="text-[16px] font-semibold text-[#101828]">
-                  {activeSeq.name}
-                </h2>
               </div>
+            ))}
+          </Card>
+
+          <Card className="lg:col-span-8 p-4 space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E4E4E7] pb-3">
+              <h2 className="text-[15px] font-semibold text-[#18181B]">
+                {activeSeq.name}
+              </h2>
               <div className="flex items-center gap-2 text-[12px]">
-                <span className="text-[#667085]">Stop when customer replies</span>
+                <span className="text-[#52525B]">Stop when customer replies</span>
                 <Switch
                   checked={activeSeq.stopOnReply}
                   onCheckedChange={(v) =>
@@ -106,11 +100,11 @@ export default function SequencesPage() {
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2">
               {activeSeq.steps.map((step, idx) => (
                 <div
                   key={step.id}
-                  className="flex items-center justify-between rounded-[8px] border border-[#E4E7EC] bg-[#F8F9FC] p-3.5"
+                  className="flex items-center justify-between rounded-[6px] border border-[#E4E4E7] bg-[#F7F7F8] px-3.5 py-2.5"
                 >
                   <div>
                     <div className="flex items-center gap-2">
@@ -118,18 +112,19 @@ export default function SequencesPage() {
                         Day {step.delayDays}
                         {step.delayHours > 0 ? ` + ${step.delayHours}h` : ""}
                       </Badge>
-                      <p className="text-[13px] font-semibold text-[#101828]">
+                      <p className="text-[13px] font-medium text-[#18181B]">
                         {step.title}
                       </p>
                     </div>
-                    <p className="text-[12px] text-[#667085] mt-1">
+                    <p className="text-[12px] text-[#71717A] mt-0.5">
                       {step.description}
                     </p>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-0.5 shrink-0">
                     <Button
                       variant="ghost"
                       size="icon-sm"
+                      aria-label="Move step up"
                       onClick={() => moveStep(idx, -1)}
                     >
                       <ArrowUp className="h-3.5 w-3.5" />
@@ -137,6 +132,7 @@ export default function SequencesPage() {
                     <Button
                       variant="ghost"
                       size="icon-sm"
+                      aria-label="Move step down"
                       onClick={() => moveStep(idx, 1)}
                     >
                       <ArrowDown className="h-3.5 w-3.5" />
@@ -144,6 +140,7 @@ export default function SequencesPage() {
                     <Button
                       variant="ghost"
                       size="icon-sm"
+                      aria-label="Delete step"
                       onClick={() =>
                         saveSequence({
                           ...activeSeq,
@@ -151,7 +148,7 @@ export default function SequencesPage() {
                         })
                       }
                     >
-                      <Trash2 className="h-3.5 w-3.5 text-[#F04438]" />
+                      <Trash2 className="h-3.5 w-3.5 text-[#DC2626]" />
                     </Button>
                   </div>
                 </div>
@@ -160,7 +157,7 @@ export default function SequencesPage() {
 
             <form
               onSubmit={addStep}
-              className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-[#E4E7EC]"
+              className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-[#E4E4E7]"
             >
               <Input
                 placeholder="New step title (e.g. WhatsApp reminder)"

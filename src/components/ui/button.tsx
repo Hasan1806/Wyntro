@@ -4,27 +4,26 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[8px] text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#635BFF]/30 disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
+  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-[6px] text-[13px] leading-[20px] font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#635BFF]/30 disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
   {
     variants: {
       variant: {
         default:
-          "bg-[#635BFF] text-white hover:bg-[#5148E5] shadow-[0_1px_2px_rgba(16,24,40,0.06)]",
+          "bg-[#635BFF] text-white hover:bg-[#5148E5] active:bg-[#463ED8]",
         secondary:
-          "bg-white text-[#101828] border border-[#E4E7EC] hover:bg-[#F8F9FC] shadow-[0_1px_2px_rgba(16,24,40,0.04)]",
-        ghost: "text-[#667085] hover:bg-[#F2F4F7] hover:text-[#101828]",
-        soft: "bg-[#EFEDFF] text-[#635BFF] hover:bg-[#E4E0FF]",
-        destructive:
-          "bg-[#F04438] text-white hover:bg-[#D92D20] shadow-[0_1px_2px_rgba(16,24,40,0.06)]",
+          "bg-white text-[#18181B] border border-[#E4E4E7] hover:bg-[#F4F4F5] hover:border-[#D4D4D8]",
         outline:
-          "border border-[#E4E7EC] bg-transparent text-[#101828] hover:bg-[#F8F9FC]",
+          "border border-[#E4E4E7] bg-transparent text-[#18181B] hover:bg-[#F4F4F5] hover:border-[#D4D4D8]",
+        ghost: "text-[#52525B] hover:bg-[#F4F4F5] hover:text-[#18181B]",
+        soft: "bg-[#EFEDFF] text-[#5148E5] hover:bg-[#E4E0FF]",
+        destructive: "bg-[#DC2626] text-white hover:bg-[#B91C1C]",
       },
       size: {
-        default: "h-9 px-3.5 py-2",
-        sm: "h-8 px-2.5 text-[12px]",
-        lg: "h-10 px-4 text-[14px]",
+        default: "h-9 px-3.5",
+        sm: "h-[30px] px-2.5 text-[12px]",
+        lg: "h-10 px-4 text-[13px]",
         icon: "h-9 w-9",
-        "icon-sm": "h-8 w-8",
+        "icon-sm": "h-[30px] w-[30px]",
       },
     },
     defaultVariants: {

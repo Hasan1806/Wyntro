@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { RotateCcw } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/ui/page-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,15 +23,11 @@ export default function SettingsPage() {
 
   return (
     <AppShell>
-      <div className="space-y-5 max-w-4xl">
-        <div>
-          <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-[#101828]">
-            Settings
-          </h1>
-          <p className="text-[13px] text-[#667085]">
-            Configure workspace preferences, notifications, and demo data state
-          </p>
-        </div>
+      <div className="space-y-5 max-w-3xl">
+        <PageHeader
+          title="Settings"
+          description="Workspace preferences, notifications, and demo state"
+        />
 
         <Tabs defaultValue="workspace">
           <TabsList>
@@ -42,53 +39,55 @@ export default function SettingsPage() {
           <TabsContent value="workspace">
             <Card className="p-5 space-y-4">
               <div>
-                <label className="block text-[12px] font-medium text-[#344054] mb-1">
+                <label className="block text-[13px] font-medium text-[#18181B] mb-1.5">
                   Organisation Name
                 </label>
                 <Input value={orgName} onChange={(e) => setOrgName(e.target.value)} />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[12px] font-medium text-[#344054] mb-1">
+                  <label className="block text-[13px] font-medium text-[#18181B] mb-1.5">
                     Default Currency
                   </label>
                   <Input value={currentOrg.currency} readOnly />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-medium text-[#344054] mb-1">
+                  <label className="block text-[13px] font-medium text-[#18181B] mb-1.5">
                     Industry
                   </label>
                   <Input value={currentOrg.industry} readOnly />
                 </div>
               </div>
-              <Button
-                size="sm"
-                onClick={() => toast({ title: "Workspace settings saved" })}
-              >
-                Save Changes
-              </Button>
+              <div className="pt-2 border-t border-[#E4E4E7] flex justify-end">
+                <Button
+                  size="sm"
+                  onClick={() => toast({ title: "Workspace settings saved" })}
+                >
+                  Save Changes
+                </Button>
+              </div>
             </Card>
           </TabsContent>
 
           <TabsContent value="notifications">
-            <Card className="p-5 space-y-4">
-              <div className="flex items-center justify-between">
+            <Card className="divide-y divide-[#E4E4E7]">
+              <div className="flex items-center justify-between p-5">
                 <div>
-                  <p className="text-[13px] font-medium text-[#101828]">
+                  <p className="text-[13px] font-medium text-[#18181B]">
                     New lead assignment alerts
                   </p>
-                  <p className="text-[12px] text-[#667085]">
+                  <p className="text-[12px] text-[#71717A]">
                     Notify reps immediately when a lead is routed to them.
                   </p>
                 </div>
                 <Switch checked={notifEmail} onCheckedChange={setNotifEmail} />
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between p-5">
                 <div>
-                  <p className="text-[13px] font-medium text-[#101828]">
+                  <p className="text-[13px] font-medium text-[#18181B]">
                     Follow-up due reminders
                   </p>
-                  <p className="text-[12px] text-[#667085]">
+                  <p className="text-[12px] text-[#71717A]">
                     Surface in-app reminders 15 minutes before scheduled calls.
                   </p>
                 </div>
@@ -98,11 +97,11 @@ export default function SettingsPage() {
           </TabsContent>
 
           <TabsContent value="demo">
-            <Card className="p-5 space-y-3">
-              <p className="text-[14px] font-semibold text-[#101828]">
+            <Card className="p-5 space-y-3 border-[#FECACA]">
+              <p className="text-[14px] font-semibold text-[#18181B]">
                 Reset Frontend Demo Data
               </p>
-              <p className="text-[12px] text-[#667085]">
+              <p className="text-[13px] text-[#52525B]">
                 Restore all leads, pipeline stages, follow-ups, inbox conversations, and workflows back to the initial seed dataset.
               </p>
               <Button

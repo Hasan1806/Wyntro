@@ -25,6 +25,8 @@ import {
   MoreHorizontal,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/ui/page-header";
+import { EmptyState, StatusIndicator } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -55,10 +57,10 @@ type SavedViewId =
 
 const SAVED_VIEWS: { id: SavedViewId; label: string }[] = [
   { id: "all", label: "All leads" },
-  { id: "new", label: "New leads" },
+  { id: "new", label: "New" },
   { id: "uncontacted", label: "Uncontacted" },
   { id: "my", label: "My leads" },
-  { id: "hot", label: "Hot leads" },
+  { id: "hot", label: "Hot" },
   { id: "unassigned", label: "Unassigned" },
   { id: "followup_due", label: "Follow-up due" },
   { id: "converted", label: "Converted" },
@@ -180,16 +182,16 @@ export default function LeadsPage() {
       },
       {
         accessorKey: "name",
-        header: "Client Name",
+        header: "Client",
         cell: ({ row }) => (
-          <div>
+          <div className="min-w-[160px]">
             <Link
               href={`/leads/${row.original.id}`}
-              className="font-medium text-[#101828] hover:text-[#635BFF]"
+              className="font-medium text-[#18181B] hover:text-[#635BFF] truncate block"
             >
               {row.original.name}
             </Link>
-            <p className="text-[12px] text-[#667085]">{row.original.company}</p>
+            <p className="text-[12px] text-[#71717A] truncate">{row.original.company}</p>
           </div>
         ),
       },
@@ -197,7 +199,7 @@ export default function LeadsPage() {
         accessorKey: "phone",
         header: "Phone",
         cell: ({ row }) => (
-          <span className="text-[#344054] tabular-nums whitespace-nowrap">
+          <span className="text-[#52525B] tabular-nums whitespace-nowrap">
             {row.original.phone}
           </span>
         ),
@@ -206,37 +208,41 @@ export default function LeadsPage() {
         accessorKey: "email",
         header: "Email",
         cell: ({ row }) => (
-          <span className="text-[#667085]">{row.original.email}</span>
+          <span
+            className="text-[#52525B] max-w-[190px] truncate block"
+            title={row.original.email}
+          >
+            {row.original.email}
+          </span>
         ),
       },
       {
         accessorKey: "source",
         header: "Source",
-        cell: ({ row }) => <Badge variant="outline">{row.original.source}</Badge>,
+        cell: ({ row }) => (
+          <span className="text-[#52525B] whitespace-nowrap">{row.original.source}</span>
+        ),
       },
       {
         accessorKey: "stageId",
-        header: "Sales Stage",
+        header: "Stage",
         cell: ({ row }) => {
           const st = stages.find((s) => s.id === row.original.stageId);
           return (
-            <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[#344054]">
-              <span
-                className="h-2 w-2 rounded-full"
-                style={{ backgroundColor: st?.color ?? "#635BFF" }}
-              />
-              {st?.name ?? row.original.stageId}
-            </span>
+            <StatusIndicator
+              color={st?.color ?? "#635BFF"}
+              label={st?.name ?? row.original.stageId}
+            />
           );
         },
       },
       {
         accessorKey: "assignedTo",
-        header: "Assigned Rep",
+        header: "Owner",
         cell: ({ row }) => {
           const rep = team.find((t) => t.id === row.original.assignedTo);
           return rep ? (
-            <span className="text-[#344054]">{rep.name}</span>
+            <span className="text-[#52525B] whitespace-nowrap">{rep.name}</span>
           ) : (
             <Badge variant="warning">Unassigned</Badge>
           );
@@ -244,14 +250,14 @@ export default function LeadsPage() {
       },
       {
         accessorKey: "score",
-        header: "Score / Priority",
+        header: () => <span className="block text-right">Score</span>,
         cell: ({ row }) => {
           const p = row.original.priority;
           const variant =
             p === "hot" ? "error" : p === "high" ? "warning" : p === "medium" ? "info" : "default";
           return (
-            <div className="flex items-center gap-1.5">
-              <span className="font-semibold tabular-nums text-[#101828]">
+            <div className="flex items-center justify-end gap-1.5">
+              <span className="font-medium tabular-nums text-[#18181B]">
                 {row.original.score}
               </span>
               <Badge variant={variant} className="capitalize">
@@ -262,10 +268,19 @@ export default function LeadsPage() {
         },
       },
       {
-        accessorKey: "lastContactedAt",
-        header: "Last Contacted",
+        accessorKey: "estimatedValue",
+        header: () => <span className="block text-right">Value</span>,
         cell: ({ row }) => (
-          <span className="text-[12px] text-[#667085] tabular-nums">
+          <span className="block text-right font-medium text-[#18181B] tabular-nums whitespace-nowrap">
+            {formatCurrency(row.original.estimatedValue)}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "lastContactedAt",
+        header: "Last Touch",
+        cell: ({ row }) => (
+          <span className="text-[12px] text-[#71717A] tabular-nums whitespace-nowrap">
             {row.original.lastContactedAt
               ? row.original.lastContactedAt.slice(0, 10)
               : "Never"}
@@ -274,21 +289,12 @@ export default function LeadsPage() {
       },
       {
         accessorKey: "nextFollowUpAt",
-        header: "Next Follow-up",
+        header: "Follow-up",
         cell: ({ row }) => (
-          <span className="text-[12px] text-[#667085] tabular-nums">
+          <span className="text-[12px] text-[#71717A] tabular-nums whitespace-nowrap">
             {row.original.nextFollowUpAt
               ? row.original.nextFollowUpAt.slice(0, 10)
               : "—"}
-          </span>
-        ),
-      },
-      {
-        accessorKey: "createdAt",
-        header: "Created",
-        cell: ({ row }) => (
-          <span className="text-[12px] text-[#98A2B3] tabular-nums">
-            {row.original.createdAt.slice(0, 10)}
           </span>
         ),
       },
@@ -298,8 +304,9 @@ export default function LeadsPage() {
         cell: ({ row }) => (
           <Link
             href={`/leads/${row.original.id}`}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-[6px] text-[#667085] hover:bg-[#F2F4F7] hover:text-[#101828]"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-[6px] text-[#71717A] hover:bg-[#F4F4F5] hover:text-[#18181B]"
             title="Open Lead Profile"
+            aria-label={`Open ${row.original.name}`}
           >
             <MoreHorizontal className="h-4 w-4" />
           </Link>
@@ -358,7 +365,7 @@ export default function LeadsPage() {
       assignedTo: "tm-1",
       priority: "high",
       score: 79,
-      estimatedValue: 26000,
+      estimatedValue: 260000,
       tags: ["CSV Import"],
       groups: ["EMEA"],
       notes: "Imported via CSV preview demo.",
@@ -374,42 +381,37 @@ export default function LeadsPage() {
   return (
     <AppShell>
       <div className="space-y-4">
-        {/* Header */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-[#101828]">
-              Leads
-            </h1>
-            <p className="text-[13px] text-[#667085]">
-              {filteredLeads.length} matching records across your active pipelines
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Button variant="secondary" size="sm" onClick={() => setImportOpen(true)}>
-              <Upload className="h-3.5 w-3.5" />
-              Import CSV
-            </Button>
-            <Button variant="secondary" size="sm" onClick={handleCsvExport}>
-              <Download className="h-3.5 w-3.5" />
-              Export CSV
-            </Button>
-            <Button size="sm" onClick={() => setAddOpen(true)}>
-              <Plus className="h-3.5 w-3.5" />
-              Add Lead
-            </Button>
-          </div>
-        </div>
+        <PageHeader
+          title="Leads"
+          description={`${filteredLeads.length} matching records across active pipelines`}
+          actions={
+            <>
+              <Button variant="secondary" size="sm" onClick={() => setImportOpen(true)}>
+                <Upload className="h-3.5 w-3.5" />
+                Import
+              </Button>
+              <Button variant="secondary" size="sm" onClick={handleCsvExport}>
+                <Download className="h-3.5 w-3.5" />
+                Export
+              </Button>
+              <Button size="sm" onClick={() => setAddOpen(true)}>
+                <Plus className="h-3.5 w-3.5" />
+                Add Lead
+              </Button>
+            </>
+          }
+        />
 
-        {/* Saved Views Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+        {/* Saved Views */}
+        <div className="flex items-center gap-1 overflow-x-auto border-b border-[#E4E4E7] pb-2">
           {SAVED_VIEWS.map((view) => (
             <button
               key={view.id}
               onClick={() => setSavedView(view.id)}
-              className={`rounded-[8px] px-3 py-1.5 text-[12px] font-medium whitespace-nowrap transition-colors cursor-pointer ${
+              className={`rounded-[6px] px-2.5 py-1 text-[12px] font-medium whitespace-nowrap transition-colors cursor-pointer ${
                 savedView === view.id
-                  ? "bg-[#635BFF] text-white"
-                  : "bg-white border border-[#E4E7EC] text-[#667085] hover:text-[#101828]"
+                  ? "bg-[#18181B] text-white"
+                  : "text-[#52525B] hover:bg-[#F4F4F5] hover:text-[#18181B]"
               }`}
             >
               {view.label}
@@ -417,16 +419,16 @@ export default function LeadsPage() {
           ))}
         </div>
 
-        {/* Search + Filter & Column Controls */}
-        <div className="rounded-[10px] border border-[#E4E7EC] bg-white p-3.5 space-y-3">
+        {/* Search & Filter Toolbar */}
+        <div className="space-y-2.5">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#98A2B3]" />
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#A1A1AA]" />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by name, company, email, or phone..."
-                className="pl-9"
+                placeholder="Search name, company, email, phone..."
+                className="pl-8.5 h-9"
               />
             </div>
 
@@ -439,7 +441,7 @@ export default function LeadsPage() {
                 <SlidersHorizontal className="h-3.5 w-3.5" />
                 Filters
                 {activeChips.length > 0 && (
-                  <span className="ml-1 rounded-full bg-[#635BFF] px-1.5 text-[10px] text-white">
+                  <span className="ml-1 rounded-[4px] bg-[#635BFF] px-1.5 text-[10px] text-white tabular-nums">
                     {activeChips.length}
                   </span>
                 )}
@@ -455,14 +457,14 @@ export default function LeadsPage() {
                   Columns
                 </Button>
                 {showColumns && (
-                  <div className="absolute right-0 top-full z-30 mt-1.5 w-48 rounded-[8px] border border-[#E4E7EC] bg-white p-2 shadow-lg space-y-1.5">
+                  <div className="absolute right-0 top-full z-30 mt-1.5 w-48 rounded-[8px] border border-[#E4E4E7] bg-white p-2 shadow-[0_8px_24px_-4px_rgba(24,24,27,0.12)] space-y-1">
                     {table
                       .getAllLeafColumns()
                       .filter((c) => c.getCanHide())
                       .map((col) => (
                         <label
                           key={col.id}
-                          className="flex items-center gap-2 text-[12px] text-[#344054] cursor-pointer px-1 py-0.5 hover:bg-[#F8F9FC] rounded"
+                          className="flex items-center gap-2 text-[12px] text-[#52525B] cursor-pointer px-1.5 py-1 hover:bg-[#F4F4F5] rounded-[4px]"
                         >
                           <Checkbox
                             checked={col.getIsVisible()}
@@ -481,13 +483,12 @@ export default function LeadsPage() {
             </div>
           </div>
 
-          {/* Filter Builder */}
           {showFilters && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 pt-2 border-t border-[#E4E7EC]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 rounded-[8px] border border-[#E4E4E7] bg-white p-3">
               <select
                 value={sourceFilter}
                 onChange={(e) => setSourceFilter(e.target.value)}
-                className="h-9 rounded-[8px] border border-[#E4E7EC] bg-white px-2.5 text-[12px]"
+                className="h-9 rounded-[6px] border border-[#E4E4E7] bg-white px-2.5 text-[12px] text-[#18181B]"
               >
                 <option value="">All Sources</option>
                 {[
@@ -509,7 +510,7 @@ export default function LeadsPage() {
               <select
                 value={stageFilter}
                 onChange={(e) => setStageFilter(e.target.value)}
-                className="h-9 rounded-[8px] border border-[#E4E7EC] bg-white px-2.5 text-[12px]"
+                className="h-9 rounded-[6px] border border-[#E4E4E7] bg-white px-2.5 text-[12px] text-[#18181B]"
               >
                 <option value="">All Stages</option>
                 {stages.map((s) => (
@@ -522,7 +523,7 @@ export default function LeadsPage() {
               <select
                 value={ownerFilter}
                 onChange={(e) => setOwnerFilter(e.target.value)}
-                className="h-9 rounded-[8px] border border-[#E4E7EC] bg-white px-2.5 text-[12px]"
+                className="h-9 rounded-[6px] border border-[#E4E4E7] bg-white px-2.5 text-[12px] text-[#18181B]"
               >
                 <option value="">All Owners</option>
                 {team.map((m) => (
@@ -535,7 +536,7 @@ export default function LeadsPage() {
               <select
                 value={priorityFilter}
                 onChange={(e) => setPriorityFilter(e.target.value)}
-                className="h-9 rounded-[8px] border border-[#E4E7EC] bg-white px-2.5 text-[12px]"
+                className="h-9 rounded-[6px] border border-[#E4E4E7] bg-white px-2.5 text-[12px] text-[#18181B]"
               >
                 <option value="">All Priorities</option>
                 <option value="hot">Hot</option>
@@ -547,7 +548,7 @@ export default function LeadsPage() {
               <select
                 value={groupFilter}
                 onChange={(e) => setGroupFilter(e.target.value)}
-                className="h-9 rounded-[8px] border border-[#E4E7EC] bg-white px-2.5 text-[12px]"
+                className="h-9 rounded-[6px] border border-[#E4E4E7] bg-white px-2.5 text-[12px] text-[#18181B]"
               >
                 <option value="">All Groups</option>
                 {["VIP Accounts", "EMEA", "APAC", "North America", "High Intent"].map((g) => (
@@ -559,16 +560,15 @@ export default function LeadsPage() {
             </div>
           )}
 
-          {/* Active Filter Chips */}
           {activeChips.length > 0 && (
-            <div className="flex flex-wrap items-center gap-1.5 pt-1">
+            <div className="flex flex-wrap items-center gap-1.5">
               {activeChips.map((chip) => (
                 <span
                   key={chip.key}
-                  className="inline-flex items-center gap-1 rounded-full bg-[#EFEDFF] px-2.5 py-1 text-[11px] font-medium text-[#635BFF]"
+                  className="inline-flex items-center gap-1 rounded-[5px] border border-[#E4E4E7] bg-white px-2 py-0.5 text-[11px] font-medium text-[#52525B]"
                 >
                   {chip.label}
-                  <button onClick={chip.clear} className="hover:text-[#101828] cursor-pointer">
+                  <button onClick={chip.clear} className="hover:text-[#18181B] cursor-pointer">
                     <X className="h-3 w-3" />
                   </button>
                 </span>
@@ -579,9 +579,9 @@ export default function LeadsPage() {
 
         {/* Bulk Actions Bar */}
         {selectedIds.length > 0 && (
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border border-[#635BFF]/30 bg-[#EFEDFF] px-4 py-2.5">
-            <span className="text-[13px] font-medium text-[#101828]">
-              {selectedIds.length} lead(s) selected
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-[8px] border border-[#635BFF]/30 bg-[#EFEDFF] px-4 py-2">
+            <span className="text-[13px] font-medium text-[#18181B] tabular-nums">
+              {selectedIds.length} selected
             </span>
             <div className="flex flex-wrap items-center gap-2">
               <select
@@ -592,7 +592,7 @@ export default function LeadsPage() {
                   toast({ title: "Bulk assigned", description: `Updated ${selectedIds.length} leads.` });
                   setRowSelection({});
                 }}
-                className="h-8 rounded-[6px] border border-[#D0D5DD] bg-white px-2 text-[12px]"
+                className="h-8 rounded-[6px] border border-[#D4D4D8] bg-white px-2 text-[12px]"
               >
                 <option value="">Assign Rep...</option>
                 {team.map((m) => (
@@ -610,7 +610,7 @@ export default function LeadsPage() {
                   toast({ title: "Bulk stage updated" });
                   setRowSelection({});
                 }}
-                className="h-8 rounded-[6px] border border-[#D0D5DD] bg-white px-2 text-[12px]"
+                className="h-8 rounded-[6px] border border-[#D4D4D8] bg-white px-2 text-[12px]"
               >
                 <option value="">Move Stage...</option>
                 {stages.map((s) => (
@@ -632,84 +632,101 @@ export default function LeadsPage() {
           </div>
         )}
 
-        {/* Table */}
-        <div className="rounded-[10px] border border-[#E4E7EC] bg-white overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-left text-[13px]">
-              <thead className="border-b border-[#E4E7EC] bg-[#F8F9FC] text-[12px] font-medium text-[#667085]">
-                {table.getHeaderGroups().map((hg) => (
-                  <tr key={hg.id}>
-                    {hg.headers.map((header) => (
-                      <th key={header.id} className="px-3.5 py-2.5 whitespace-nowrap">
-                        {header.isPlaceholder ? null : header.column.getCanSort() ? (
-                          <button
-                            onClick={header.column.getToggleSortingHandler()}
-                            className="inline-flex items-center gap-1 hover:text-[#101828] cursor-pointer"
-                          >
-                            {flexRender(header.column.columnDef.header, header.getContext())}
-                            <ArrowUpDown className="h-3 w-3 text-[#98A2B3]" />
-                          </button>
-                        ) : (
-                          flexRender(header.column.columnDef.header, header.getContext())
-                        )}
-                      </th>
-                    ))}
-                  </tr>
-                ))}
-              </thead>
-              <tbody className="divide-y divide-[#E4E7EC]">
-                {table.getRowModel().rows.length === 0 ? (
-                  <tr>
-                    <td colSpan={12} className="px-4 py-10 text-center text-[#667085]">
-                      No leads match your current view and filters.
-                    </td>
-                  </tr>
-                ) : (
-                  table.getRowModel().rows.map((row) => (
-                    <tr key={row.id} className="hover:bg-[#F8F9FC] transition-colors">
+        {/* Data Table */}
+        {filteredLeads.length === 0 ? (
+          <EmptyState
+            title="No leads match your filters"
+            description="Adjust your search query or clear active view filters."
+            action={
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  setSavedView("all");
+                  setSearch("");
+                  setSourceFilter("");
+                  setStageFilter("");
+                  setOwnerFilter("");
+                  setPriorityFilter("");
+                  setGroupFilter("");
+                }}
+              >
+                Reset Filters
+              </Button>
+            }
+          />
+        ) : (
+          <div className="rounded-[8px] border border-[#E4E4E7] bg-white overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-left text-[13px] leading-[20px]">
+                <thead className="h-10 border-b border-[#E4E4E7] bg-[#F7F7F8] text-[12px] font-medium text-[#52525B] sticky top-0">
+                  {table.getHeaderGroups().map((hg) => (
+                    <tr key={hg.id}>
+                      {hg.headers.map((header) => (
+                        <th key={header.id} className="px-3.5 whitespace-nowrap">
+                          {header.isPlaceholder ? null : header.column.getCanSort() ? (
+                            <button
+                              onClick={header.column.getToggleSortingHandler()}
+                              className="inline-flex items-center gap-1 hover:text-[#18181B] cursor-pointer"
+                            >
+                              {flexRender(header.column.columnDef.header, header.getContext())}
+                              <ArrowUpDown className="h-3 w-3 text-[#A1A1AA]" />
+                            </button>
+                          ) : (
+                            flexRender(header.column.columnDef.header, header.getContext())
+                          )}
+                        </th>
+                      ))}
+                    </tr>
+                  ))}
+                </thead>
+                <tbody className="divide-y divide-[#E4E4E7]">
+                  {table.getRowModel().rows.map((row) => (
+                    <tr
+                      key={row.id}
+                      className="h-[48px] hover:bg-[#F7F7F8] transition-colors"
+                    >
                       {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} className="px-3.5 py-3 align-middle">
+                        <td key={cell.id} className="px-3.5 py-2 align-middle">
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
                       ))}
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-          {/* Pagination */}
-          <div className="flex items-center justify-between border-t border-[#E4E7EC] px-4 py-3 text-[12px] text-[#667085]">
-            <span>
-              Page {table.getState().pagination.pageIndex + 1} of{" "}
-              {Math.max(1, table.getPageCount())}
-            </span>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                Previous
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-              >
-                Next
-              </Button>
+            <div className="flex items-center justify-between border-t border-[#E4E4E7] px-4 py-2.5 text-[12px] text-[#71717A]">
+              <span className="tabular-nums">
+                Page {table.getState().pagination.pageIndex + 1} of{" "}
+                {Math.max(1, table.getPageCount())}
+              </span>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                >
+                  Next
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       <AddLeadDrawer open={addOpen} onOpenChange={setAddOpen} />
 
-      {/* CSV Import Preview Modal */}
       <Dialog open={importOpen} onOpenChange={setImportOpen}>
         <DialogContent>
           <DialogHeader>
@@ -718,10 +735,10 @@ export default function LeadsPage() {
               Preview column mapping before importing leads into Wyntro.
             </DialogDescription>
           </DialogHeader>
-          <div className="rounded-[8px] border border-[#E4E7EC] bg-[#F8F9FC] p-3 text-[12px] space-y-1.5">
-            <p className="font-medium text-[#101828]">Sample Row Detected:</p>
-            <p className="text-[#667085]">
-              Name: Nadia Al-Mansoor • Company: Oasis Ventures • Email: nadia@oasisventures.ae
+          <div className="rounded-[6px] border border-[#E4E4E7] bg-[#F7F7F8] p-3 text-[12px] space-y-1">
+            <p className="font-medium text-[#18181B]">Sample Row Detected</p>
+            <p className="text-[#52525B]">
+              Name: Nadia Al-Mansoor · Company: Oasis Ventures · Email: nadia@oasisventures.ae
             </p>
           </div>
           <div className="mt-4 flex justify-end gap-2">
@@ -733,9 +750,8 @@ export default function LeadsPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Bulk Delete Confirmation */}
       <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-[420px]">
           <DialogHeader>
             <DialogTitle>Delete {selectedIds.length} lead(s)?</DialogTitle>
             <DialogDescription>

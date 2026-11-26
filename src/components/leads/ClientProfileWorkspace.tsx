@@ -7,22 +7,19 @@ import {
   MessageSquare,
   Mail,
   StickyNote,
-  CalendarPlus,
   CheckSquare,
   Share2,
   ArrowLeft,
-  Building2,
-  MapPin,
-  Sparkles,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, PropertyRow } from "@/components/ui/primitives";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input, Textarea } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useCrmStore } from "@/store/useCrmStore";
-import { formatCurrency, getInitials } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 import { toast } from "@/components/ui/toast";
 
 export function ClientProfileWorkspace({ id }: { id: string }) {
@@ -51,12 +48,12 @@ export function ClientProfileWorkspace({ id }: { id: string }) {
   if (!lead) {
     return (
       <AppShell>
-        <div className="rounded-[10px] border border-[#E4E7EC] bg-white p-8 text-center">
-          <p className="text-[15px] font-semibold text-[#101828]">Record not found</p>
-          <p className="text-[13px] text-[#667085] mt-1">
+        <div className="rounded-[8px] border border-[#E4E4E7] bg-white p-8 text-center">
+          <p className="text-[14px] font-semibold text-[#18181B]">Record not found</p>
+          <p className="text-[13px] text-[#71717A] mt-1">
             This lead or contact may have been deleted in demo mode.
           </p>
-          <Button asChild className="mt-4">
+          <Button asChild size="sm" className="mt-4">
             <Link href="/leads">Back to Leads</Link>
           </Button>
         </div>
@@ -151,309 +148,299 @@ export function ClientProfileWorkspace({ id }: { id: string }) {
         <div className="flex items-center justify-between">
           <Link
             href="/leads"
-            className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#667085] hover:text-[#101828]"
+            className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#52525B] hover:text-[#18181B]"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="h-3.5 w-3.5" />
             Back to Leads
           </Link>
-          <Badge variant="primary">
-            <Sparkles className="h-3 w-3" />
-            Simulated Activity & Demo Messaging
-          </Badge>
+          <span className="text-[12px] text-[#71717A]">
+            Simulated Demo Activity & Messaging
+          </span>
         </div>
 
         {/* 3-Region Workspace */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-          {/* LEFT REGION: Identity & Client Info */}
-          <div className="lg:col-span-3 space-y-4">
-            <Card className="p-5">
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#EFEDFF] text-[15px] font-semibold text-[#635BFF]">
-                  {getInitials(lead.name)}
+          {/* LEFT: Identity & Structured Property Rows */}
+          <Card className="lg:col-span-3 p-4 space-y-4">
+            <div className="flex items-center gap-3">
+              <Avatar name={lead.name} color="#635BFF" size="lg" />
+              <div className="min-w-0">
+                <h1 className="truncate text-[16px] font-semibold text-[#18181B]">
+                  {lead.name}
+                </h1>
+                <p className="truncate text-[12px] text-[#71717A]">{lead.company}</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-4 gap-1.5">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="flex-col h-12 px-1 text-[11px]"
+                onClick={() =>
+                  handleLogQuickAction(
+                    "call_logged",
+                    "Outbound Call Logged",
+                    `Simulated call attempt to ${lead.phone}.`
+                  )
+                }
+              >
+                <Phone className="h-3.5 w-3.5 text-[#52525B]" />
+                Call
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="flex-col h-12 px-1 text-[11px]"
+                onClick={() => setSimChannel("whatsapp")}
+              >
+                <MessageSquare className="h-3.5 w-3.5 text-[#52525B]" />
+                WhatsApp
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="flex-col h-12 px-1 text-[11px]"
+                onClick={() => setSimChannel("email")}
+              >
+                <Mail className="h-3.5 w-3.5 text-[#52525B]" />
+                Email
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="flex-col h-12 px-1 text-[11px]"
+                onClick={() =>
+                  handleLogQuickAction(
+                    "file_shared",
+                    "Content Shared",
+                    `Shared ${contentItems[0]?.title ?? "Overview Deck"} (Simulated).`
+                  )
+                }
+              >
+                <Share2 className="h-3.5 w-3.5 text-[#52525B]" />
+                Share
+              </Button>
+            </div>
+
+            <div className="border-t border-[#E4E4E7] pt-2">
+              <PropertyRow label="Email" value={lead.email} />
+              <PropertyRow label="Phone" value={<span className="tabular-nums">{lead.phone}</span>} />
+              {(lead.city || lead.country) && (
+                <PropertyRow
+                  label="Location"
+                  value={[lead.city, lead.country].filter(Boolean).join(", ")}
+                />
+              )}
+              <PropertyRow label="Source" value={lead.source} />
+              <PropertyRow
+                label="Est. Value"
+                value={<span className="tabular-nums">{formatCurrency(lead.estimatedValue)}</span>}
+              />
+              <PropertyRow
+                label="Lead Score"
+                value={<span className="tabular-nums">{lead.score}/100</span>}
+              />
+            </div>
+
+            {lead.tags.length > 0 && (
+              <div className="border-t border-[#E4E4E7] pt-3">
+                <p className="text-[11px] font-medium text-[#71717A] mb-1.5">Tags</p>
+                <div className="flex flex-wrap gap-1">
+                  {lead.tags.map((t) => (
+                    <Badge key={t} variant="default">
+                      {t}
+                    </Badge>
+                  ))}
                 </div>
-                <div className="min-w-0">
-                  <h1 className="truncate text-[17px] font-semibold text-[#101828]">
-                    {lead.name}
-                  </h1>
-                  <p className="truncate text-[12px] text-[#667085] flex items-center gap-1">
-                    <Building2 className="h-3.5 w-3.5" />
-                    {lead.company}
+              </div>
+            )}
+
+            {Object.keys(lead.customFields).length > 0 && (
+              <div className="border-t border-[#E4E4E7] pt-2">
+                <p className="text-[11px] font-medium text-[#71717A] mb-1">Custom Fields</p>
+                {Object.entries(lead.customFields).map(([k, v]) => (
+                  <PropertyRow key={k} label={k} value={v} />
+                ))}
+              </div>
+            )}
+          </Card>
+
+          {/* CENTER: Activity Timeline & 7 Tabs */}
+          <Card className="lg:col-span-6 p-4">
+            <Tabs defaultValue="activity">
+              <TabsList className="w-full overflow-x-auto justify-start">
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="activity">Activity</TabsTrigger>
+                <TabsTrigger value="conversations">Conversations</TabsTrigger>
+                <TabsTrigger value="deals">Deals</TabsTrigger>
+                <TabsTrigger value="tasks">Tasks</TabsTrigger>
+                <TabsTrigger value="files">Files</TabsTrigger>
+                <TabsTrigger value="notes">Notes</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="overview" className="space-y-4">
+                <div className="rounded-[6px] border border-[#E4E4E7] bg-[#F7F7F8] p-3.5">
+                  <p className="text-[12px] font-medium text-[#71717A]">Qualification Notes</p>
+                  <p className="mt-1 text-[13px] text-[#18181B]">
+                    {lead.notes || "No notes added yet."}
                   </p>
                 </div>
-              </div>
-
-              {/* Quick Actions */}
-              <div className="mt-4 grid grid-cols-4 gap-1.5">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="flex-col h-14 px-1 text-[11px]"
-                  onClick={() =>
-                    handleLogQuickAction(
-                      "call_logged",
-                      "Outbound Call Logged",
-                      `Simulated call attempt to ${lead.phone}.`
-                    )
-                  }
-                >
-                  <Phone className="h-3.5 w-3.5 text-[#635BFF]" />
-                  Call
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="flex-col h-14 px-1 text-[11px]"
-                  onClick={() => setSimChannel("whatsapp")}
-                >
-                  <MessageSquare className="h-3.5 w-3.5 text-[#12B76A]" />
-                  WhatsApp
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="flex-col h-14 px-1 text-[11px]"
-                  onClick={() => setSimChannel("email")}
-                >
-                  <Mail className="h-3.5 w-3.5 text-[#2E90FA]" />
-                  Email
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="flex-col h-14 px-1 text-[11px]"
-                  onClick={() =>
-                    handleLogQuickAction(
-                      "file_shared",
-                      "Content Shared",
-                      `Shared ${contentItems[0]?.title ?? "Overview Deck"} (Simulated).`
-                    )
-                  }
-                >
-                  <Share2 className="h-3.5 w-3.5 text-[#F79009]" />
-                  Share
-                </Button>
-              </div>
-
-              <div className="mt-5 space-y-3 border-t border-[#E4E7EC] pt-4 text-[13px]">
-                <div>
-                  <p className="text-[11px] uppercase tracking-wider text-[#98A2B3]">Email</p>
-                  <p className="text-[#101828] break-all">{lead.email}</p>
-                </div>
-                <div>
-                  <p className="text-[11px] uppercase tracking-wider text-[#98A2B3]">Phone</p>
-                  <p className="text-[#101828] tabular-nums">{lead.phone}</p>
-                </div>
-                {(lead.city || lead.country) && (
-                  <div>
-                    <p className="text-[11px] uppercase tracking-wider text-[#98A2B3]">Location</p>
-                    <p className="text-[#101828] flex items-center gap-1">
-                      <MapPin className="h-3.5 w-3.5 text-[#98A2B3]" />
-                      {[lead.city, lead.country].filter(Boolean).join(", ")}
-                    </p>
-                  </div>
-                )}
-                <div>
-                  <p className="text-[11px] uppercase tracking-wider text-[#98A2B3]">Tags</p>
-                  <div className="mt-1 flex flex-wrap gap-1">
-                    {lead.tags.map((t) => (
-                      <Badge key={t} variant="primary">
-                        {t}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-                {Object.keys(lead.customFields).length > 0 && (
-                  <div className="pt-2 border-t border-[#E4E7EC] space-y-2">
-                    <p className="text-[11px] uppercase tracking-wider text-[#98A2B3]">
-                      Custom Fields
-                    </p>
-                    {Object.entries(lead.customFields).map(([k, v]) => (
-                      <div key={k} className="flex justify-between text-[12px]">
-                        <span className="text-[#667085]">{k}</span>
-                        <span className="font-medium text-[#101828]">{v}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </Card>
-          </div>
-
-          {/* CENTER REGION: Timeline & 7 Tabs */}
-          <div className="lg:col-span-6 space-y-4">
-            <Card className="p-5">
-              <Tabs defaultValue="activity">
-                <TabsList className="w-full overflow-x-auto justify-start">
-                  <TabsTrigger value="overview">Overview</TabsTrigger>
-                  <TabsTrigger value="activity">Activity</TabsTrigger>
-                  <TabsTrigger value="conversations">Conversations</TabsTrigger>
-                  <TabsTrigger value="deals">Deals</TabsTrigger>
-                  <TabsTrigger value="tasks">Tasks</TabsTrigger>
-                  <TabsTrigger value="files">Files</TabsTrigger>
-                  <TabsTrigger value="notes">Notes</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="overview" className="space-y-4">
-                  <div className="rounded-[8px] border border-[#E4E7EC] bg-[#F8F9FC] p-4">
-                    <p className="text-[12px] font-medium text-[#667085]">Qualification Notes</p>
-                    <p className="mt-1 text-[13px] text-[#101828]">{lead.notes || "No notes added yet."}</p>
-                  </div>
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="rounded-[8px] border border-[#E4E7EC] p-3">
-                      <p className="text-[11px] text-[#667085]">Deal Value</p>
-                      <p className="text-[18px] font-semibold text-[#101828] tabular-nums">
-                        {formatCurrency(lead.estimatedValue)}
-                      </p>
-                    </div>
-                    <div className="rounded-[8px] border border-[#E4E7EC] p-3">
-                      <p className="text-[11px] text-[#667085]">Lead Score</p>
-                      <p className="text-[18px] font-semibold text-[#635BFF] tabular-nums">
-                        {lead.score}/100
-                      </p>
-                    </div>
-                    <div className="rounded-[8px] border border-[#E4E7EC] p-3">
-                      <p className="text-[11px] text-[#667085]">Opt-in Consent</p>
-                      <p className="text-[14px] font-semibold text-[#12B76A] mt-1">
-                        {lead.consentOptIn ? "Opted In" : "Pending"}
-                      </p>
-                    </div>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="activity" className="space-y-4">
-                  {/* Simulated Composer */}
-                  <form
-                    onSubmit={handleSendSimulatedComm}
-                    className="rounded-[8px] border border-[#E4E7EC] bg-[#F8F9FC] p-3 space-y-2.5"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        {(["whatsapp", "email", "sms"] as const).map((ch) => (
-                          <button
-                            key={ch}
-                            type="button"
-                            onClick={() => setSimChannel(ch)}
-                            className={`rounded-[6px] px-2.5 py-1 text-[11px] font-medium uppercase cursor-pointer ${
-                              simChannel === ch
-                                ? "bg-[#635BFF] text-white"
-                                : "bg-white border border-[#E4E7EC] text-[#667085]"
-                            }`}
-                          >
-                            {ch}
-                          </button>
-                        ))}
-                      </div>
-                      <span className="text-[11px] text-[#98A2B3]">
-                        Simulated Composer (Demo)
-                      </span>
-                    </div>
-                    <Textarea
-                      rows={2}
-                      value={simMessage}
-                      onChange={(e) => setSimMessage(e.target.value)}
-                      placeholder={`Compose a simulated ${simChannel} message to ${lead.name}...`}
-                    />
-                    <div className="flex justify-end">
-                      <Button type="submit" size="sm">
-                        Log Simulated {simChannel.toUpperCase()}
-                      </Button>
-                    </div>
-                  </form>
-
-                  {/* Timeline */}
-                  <div className="space-y-3">
-                    {leadActivities.length === 0 ? (
-                      <p className="text-[13px] text-[#667085] py-4 text-center">
-                        No timeline activities recorded yet.
-                      </p>
-                    ) : (
-                      leadActivities.map((act) => (
-                        <div
-                          key={act.id}
-                          className="relative pl-5 pb-3 border-l border-[#E4E7EC] last:pb-0"
-                        >
-                          <span className="absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full bg-[#635BFF]" />
-                          <div className="flex items-center justify-between gap-2">
-                            <p className="text-[13px] font-medium text-[#101828]">
-                              {act.title}
-                            </p>
-                            <div className="flex items-center gap-1.5">
-                              {act.isSimulated && (
-                                <Badge variant="outline">Simulated</Badge>
-                              )}
-                              <span className="text-[11px] text-[#98A2B3] tabular-nums">
-                                {act.createdAt.slice(0, 10)}
-                              </span>
-                            </div>
-                          </div>
-                          <p className="mt-0.5 text-[12px] text-[#667085]">
-                            {act.description}
-                          </p>
-                          <p className="mt-1 text-[11px] text-[#98A2B3]">
-                            by {act.actorName}
-                          </p>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="conversations">
-                  {leadConversation ? (
-                    <div className="space-y-2.5">
-                      {leadConversation.messages.map((m) => (
-                        <div
-                          key={m.id}
-                          className="rounded-[8px] border border-[#E4E7EC] p-3 text-[13px]"
-                        >
-                          <div className="flex items-center justify-between text-[11px] text-[#667085] mb-1">
-                            <span className="font-medium text-[#101828]">
-                              {m.senderName} ({m.channel})
-                            </span>
-                            <span>{m.status} • Simulated</span>
-                          </div>
-                          <p className="text-[#344054]">{m.body}</p>
-                        </div>
-                      ))}
-                      <Button asChild variant="secondary" size="sm">
-                        <Link href="/inbox">Open in Unified Inbox →</Link>
-                      </Button>
-                    </div>
-                  ) : (
-                    <p className="text-[13px] text-[#667085] py-4">
-                      No conversation thread yet.{" "}
-                      <Link href="/inbox" className="text-[#635BFF] hover:underline">
-                        Open Unified Inbox
-                      </Link>
-                    </p>
-                  )}
-                </TabsContent>
-
-                <TabsContent value="deals">
-                  <div className="rounded-[8px] border border-[#E4E7EC] p-4 flex items-center justify-between">
-                    <div>
-                      <p className="text-[14px] font-semibold text-[#101828]">
-                        {lead.company} — Enterprise Opportunity
-                      </p>
-                      <p className="text-[12px] text-[#667085] mt-0.5">
-                        Pipeline: {pipeline.name} • Stage: {lead.stageId}
-                      </p>
-                    </div>
-                    <p className="text-[16px] font-semibold text-[#101828] tabular-nums">
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="rounded-[6px] border border-[#E4E4E7] p-3">
+                    <p className="text-[11px] text-[#71717A]">Deal Value</p>
+                    <p className="mt-1 text-[16px] font-semibold text-[#18181B] tabular-nums">
                       {formatCurrency(lead.estimatedValue)}
                     </p>
                   </div>
-                </TabsContent>
+                  <div className="rounded-[6px] border border-[#E4E4E7] p-3">
+                    <p className="text-[11px] text-[#71717A]">Lead Score</p>
+                    <p className="mt-1 text-[16px] font-semibold text-[#635BFF] tabular-nums">
+                      {lead.score}/100
+                    </p>
+                  </div>
+                  <div className="rounded-[6px] border border-[#E4E4E7] p-3">
+                    <p className="text-[11px] text-[#71717A]">Opt-in</p>
+                    <p className="mt-1 text-[14px] font-semibold text-[#16A34A]">
+                      {lead.consentOptIn ? "Opted In" : "Pending"}
+                    </p>
+                  </div>
+                </div>
+              </TabsContent>
 
-                <TabsContent value="tasks" className="space-y-3">
-                  {leadFollowUps.map((t) => (
+              <TabsContent value="activity" className="space-y-4">
+                <form
+                  onSubmit={handleSendSimulatedComm}
+                  className="rounded-[6px] border border-[#E4E4E7] bg-[#F7F7F8] p-3 space-y-2"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1">
+                      {(["whatsapp", "email", "sms"] as const).map((ch) => (
+                        <button
+                          key={ch}
+                          type="button"
+                          onClick={() => setSimChannel(ch)}
+                          className={`rounded-[4px] px-2 py-0.5 text-[11px] font-medium uppercase cursor-pointer ${
+                            simChannel === ch
+                              ? "bg-[#18181B] text-white"
+                              : "bg-white border border-[#E4E4E7] text-[#52525B]"
+                          }`}
+                        >
+                          {ch}
+                        </button>
+                      ))}
+                    </div>
+                    <span className="text-[11px] text-[#71717A]">
+                      Simulated Composer
+                    </span>
+                  </div>
+                  <Textarea
+                    rows={2}
+                    value={simMessage}
+                    onChange={(e) => setSimMessage(e.target.value)}
+                    placeholder={`Compose a simulated ${simChannel} message to ${lead.name}...`}
+                  />
+                  <div className="flex justify-end">
+                    <Button type="submit" size="sm">
+                      Log Simulated {simChannel.toUpperCase()}
+                    </Button>
+                  </div>
+                </form>
+
+                <div className="divide-y divide-[#E4E4E7]">
+                  {leadActivities.length === 0 ? (
+                    <p className="text-[13px] text-[#71717A] py-6 text-center">
+                      No timeline activities recorded yet.
+                    </p>
+                  ) : (
+                    leadActivities.map((act) => (
+                      <div key={act.id} className="py-3 first:pt-0 last:pb-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-[13px] font-medium text-[#18181B]">
+                            {act.title}
+                          </p>
+                          <div className="flex items-center gap-2 shrink-0">
+                            {act.isSimulated && (
+                              <Badge variant="outline">Simulated</Badge>
+                            )}
+                            <span className="text-[11px] text-[#A1A1AA] tabular-nums">
+                              {act.createdAt.slice(0, 10)}
+                            </span>
+                          </div>
+                        </div>
+                        <p className="mt-0.5 text-[12px] text-[#52525B]">
+                          {act.description}
+                        </p>
+                        <p className="mt-1 text-[11px] text-[#A1A1AA]">
+                          {act.actorName}
+                        </p>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="conversations">
+                {leadConversation ? (
+                  <div className="space-y-2.5">
+                    {leadConversation.messages.map((m) => (
+                      <div
+                        key={m.id}
+                        className="rounded-[6px] border border-[#E4E4E7] p-3 text-[13px]"
+                      >
+                        <div className="flex items-center justify-between text-[11px] text-[#71717A] mb-1">
+                          <span className="font-medium text-[#18181B]">
+                            {m.senderName} · {m.channel}
+                          </span>
+                          <span>{m.status} (Simulated)</span>
+                        </div>
+                        <p className="text-[#52525B]">{m.body}</p>
+                      </div>
+                    ))}
+                    <Button asChild variant="secondary" size="sm">
+                      <Link href="/inbox">Open in Unified Inbox →</Link>
+                    </Button>
+                  </div>
+                ) : (
+                  <p className="text-[13px] text-[#71717A] py-4">
+                    No conversation thread yet.{" "}
+                    <Link href="/inbox" className="text-[#635BFF] hover:underline">
+                      Open Unified Inbox
+                    </Link>
+                  </p>
+                )}
+              </TabsContent>
+
+              <TabsContent value="deals">
+                <div className="rounded-[6px] border border-[#E4E4E7] p-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-[14px] font-semibold text-[#18181B]">
+                      {lead.company} — Enterprise Opportunity
+                    </p>
+                    <p className="text-[12px] text-[#71717A] mt-0.5">
+                      {pipeline.name} · Stage: {lead.stageId}
+                    </p>
+                  </div>
+                  <p className="text-[16px] font-semibold text-[#18181B] tabular-nums">
+                    {formatCurrency(lead.estimatedValue)}
+                  </p>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="tasks" className="space-y-2.5">
+                {leadFollowUps.length === 0 ? (
+                  <p className="text-[13px] text-[#71717A] py-4">
+                    No follow-up tasks scheduled for this client.
+                  </p>
+                ) : (
+                  leadFollowUps.map((t) => (
                     <div
                       key={t.id}
-                      className="flex items-center justify-between rounded-[8px] border border-[#E4E7EC] p-3"
+                      className="flex items-center justify-between rounded-[6px] border border-[#E4E4E7] px-3.5 py-2.5"
                     >
                       <div>
-                        <p className="text-[13px] font-medium text-[#101828]">{t.title}</p>
-                        <p className="text-[12px] text-[#667085]">
+                        <p className="text-[13px] font-medium text-[#18181B]">{t.title}</p>
+                        <p className="text-[12px] text-[#71717A] tabular-nums">
                           Due {t.dueDate} at {t.dueTime}
                         </p>
                       </div>
@@ -462,162 +449,156 @@ export function ClientProfileWorkspace({ id }: { id: string }) {
                         variant={t.status === "completed" ? "soft" : "secondary"}
                         onClick={() => toggleFollowUpComplete(t.id)}
                       >
-                        {t.status === "completed" ? "Completed" : "Mark Complete"}
+                        {t.status === "completed" ? "Completed" : "Complete"}
                       </Button>
                     </div>
-                  ))}
-                </TabsContent>
+                  ))
+                )}
+              </TabsContent>
 
-                <TabsContent value="files" className="space-y-2.5">
-                  {contentItems.slice(0, 3).map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex items-center justify-between rounded-[8px] border border-[#E4E7EC] p-3"
+              <TabsContent value="files" className="space-y-2">
+                {contentItems.slice(0, 3).map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between rounded-[6px] border border-[#E4E4E7] px-3.5 py-2.5"
+                  >
+                    <div>
+                      <p className="text-[13px] font-medium text-[#18181B]">{item.title}</p>
+                      <p className="text-[11px] text-[#71717A]">{item.sizeLabel}</p>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() =>
+                        handleLogQuickAction(
+                          "file_shared",
+                          `Shared ${item.title}`,
+                          `Simulated share link generated for ${lead.name}.`
+                        )
+                      }
                     >
-                      <div>
-                        <p className="text-[13px] font-medium text-[#101828]">{item.title}</p>
-                        <p className="text-[11px] text-[#667085]">{item.sizeLabel}</p>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={() =>
-                          handleLogQuickAction(
-                            "file_shared",
-                            `Shared ${item.title}`,
-                            `Simulated share link generated for ${lead.name}.`
-                          )
-                        }
-                      >
-                        Share
-                      </Button>
-                    </div>
-                  ))}
-                </TabsContent>
-
-                <TabsContent value="notes">
-                  <form onSubmit={handleAddNote} className="space-y-3">
-                    <Textarea
-                      rows={3}
-                      value={noteText}
-                      onChange={(e) => setNoteText(e.target.value)}
-                      placeholder="Write an internal note about this client..."
-                    />
-                    <Button type="submit" size="sm">
-                      <StickyNote className="h-3.5 w-3.5" />
-                      Save Note
+                      Share
                     </Button>
-                  </form>
-                </TabsContent>
-              </Tabs>
-            </Card>
-          </div>
+                  </div>
+                ))}
+              </TabsContent>
 
-          {/* RIGHT REGION: Sales Properties, Follow-ups & Ownership */}
-          <div className="lg:col-span-3 space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Sales Properties</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3.5">
-                <div>
-                  <label className="block text-[11px] font-medium text-[#667085] mb-1">
-                    Pipeline Stage
-                  </label>
-                  <select
-                    value={lead.stageId}
-                    onChange={(e) => {
-                      updateLead(lead.id, { stageId: e.target.value });
-                      addActivity({
-                        leadId: lead.id,
-                        type: "stage_changed",
-                        title: `Stage changed to ${e.target.value}`,
-                        description: "Updated from client profile sidebar.",
-                        actorId: actor.id,
-                        actorName: actor.name,
-                      });
-                      toast({ title: "Stage updated" });
-                    }}
-                    className="h-9 w-full rounded-[8px] border border-[#E4E7EC] bg-white px-2.5 text-[13px]"
-                  >
-                    {pipeline.stages.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-medium text-[#667085] mb-1">
-                    Lead Owner
-                  </label>
-                  <select
-                    value={lead.assignedTo}
-                    onChange={(e) => {
-                      updateLead(lead.id, { assignedTo: e.target.value });
-                      toast({ title: "Owner updated" });
-                    }}
-                    className="h-9 w-full rounded-[8px] border border-[#E4E7EC] bg-white px-2.5 text-[13px]"
-                  >
-                    <option value="">Unassigned</option>
-                    {team.map((m) => (
-                      <option key={m.id} value={m.id}>
-                        {m.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-medium text-[#667085] mb-1">
-                    Priority
-                  </label>
-                  <select
-                    value={lead.priority}
-                    onChange={(e) =>
-                      updateLead(lead.id, {
-                        priority: e.target.value as typeof lead.priority,
-                      })
-                    }
-                    className="h-9 w-full rounded-[8px] border border-[#E4E7EC] bg-white px-2.5 text-[13px]"
-                  >
-                    <option value="hot">Hot</option>
-                    <option value="high">High</option>
-                    <option value="medium">Medium</option>
-                    <option value="low">Low</option>
-                  </select>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-1.5">
-                  <CalendarPlus className="h-4 w-4 text-[#635BFF]" />
-                  Schedule Follow-up
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleCreateTask} className="space-y-2.5">
-                  <Input
-                    placeholder="e.g. Pricing review call"
-                    value={newTaskTitle}
-                    onChange={(e) => setNewTaskTitle(e.target.value)}
+              <TabsContent value="notes">
+                <form onSubmit={handleAddNote} className="space-y-3">
+                  <Textarea
+                    rows={3}
+                    value={noteText}
+                    onChange={(e) => setNoteText(e.target.value)}
+                    placeholder="Write an internal note about this client..."
                   />
-                  <Input
-                    type="date"
-                    value={newTaskDate}
-                    onChange={(e) => setNewTaskDate(e.target.value)}
-                  />
-                  <Button type="submit" size="sm" className="w-full">
-                    <CheckSquare className="h-3.5 w-3.5" />
-                    Add Follow-up
+                  <Button type="submit" size="sm">
+                    <StickyNote className="h-3.5 w-3.5" />
+                    Save Note
                   </Button>
                 </form>
-              </CardContent>
-            </Card>
-          </div>
+              </TabsContent>
+            </Tabs>
+          </Card>
+
+          {/* RIGHT: Sales Properties & Follow-ups */}
+          <Card className="lg:col-span-3 p-4 space-y-5">
+            <div className="space-y-3">
+              <p className="text-[13px] font-semibold text-[#18181B]">
+                Sales Properties
+              </p>
+
+              <div>
+                <label className="block text-[12px] font-medium text-[#52525B] mb-1">
+                  Pipeline Stage
+                </label>
+                <select
+                  value={lead.stageId}
+                  onChange={(e) => {
+                    updateLead(lead.id, { stageId: e.target.value });
+                    addActivity({
+                      leadId: lead.id,
+                      type: "stage_changed",
+                      title: `Stage changed to ${e.target.value}`,
+                      description: "Updated from client profile.",
+                      actorId: actor.id,
+                      actorName: actor.name,
+                    });
+                    toast({ title: "Stage updated" });
+                  }}
+                  className="h-[38px] w-full rounded-[6px] border border-[#E4E4E7] bg-white px-2.5 text-[13px] text-[#18181B]"
+                >
+                  {pipeline.stages.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[12px] font-medium text-[#52525B] mb-1">
+                  Lead Owner
+                </label>
+                <select
+                  value={lead.assignedTo}
+                  onChange={(e) => {
+                    updateLead(lead.id, { assignedTo: e.target.value });
+                    toast({ title: "Owner updated" });
+                  }}
+                  className="h-[38px] w-full rounded-[6px] border border-[#E4E4E7] bg-white px-2.5 text-[13px] text-[#18181B]"
+                >
+                  <option value="">Unassigned</option>
+                  {team.map((m) => (
+                    <option key={m.id} value={m.id}>
+                      {m.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[12px] font-medium text-[#52525B] mb-1">
+                  Priority
+                </label>
+                <select
+                  value={lead.priority}
+                  onChange={(e) =>
+                    updateLead(lead.id, {
+                      priority: e.target.value as typeof lead.priority,
+                    })
+                  }
+                  className="h-[38px] w-full rounded-[6px] border border-[#E4E4E7] bg-white px-2.5 text-[13px] text-[#18181B]"
+                >
+                  <option value="hot">Hot</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="border-t border-[#E4E4E7] pt-4 space-y-2.5">
+              <p className="text-[13px] font-semibold text-[#18181B]">
+                Schedule Follow-up
+              </p>
+              <form onSubmit={handleCreateTask} className="space-y-2.5">
+                <Input
+                  placeholder="e.g. Pricing review call"
+                  value={newTaskTitle}
+                  onChange={(e) => setNewTaskTitle(e.target.value)}
+                />
+                <Input
+                  type="date"
+                  value={newTaskDate}
+                  onChange={(e) => setNewTaskDate(e.target.value)}
+                />
+                <Button type="submit" size="sm" className="w-full">
+                  <CheckSquare className="h-3.5 w-3.5" />
+                  Add Follow-up
+                </Button>
+              </form>
+            </div>
+          </Card>
         </div>
       </div>
     </AppShell>

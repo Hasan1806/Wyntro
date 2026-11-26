@@ -2,8 +2,9 @@
 
 import { Plug } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/ui/page-header";
+import { StatusIndicator } from "@/components/ui/primitives";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { useCrmStore } from "@/store/useCrmStore";
 import { toast } from "@/components/ui/toast";
@@ -14,51 +15,57 @@ export default function IntegrationsPage() {
   return (
     <AppShell>
       <div className="space-y-5">
-        <div>
-          <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-[#101828]">
-            Integrations
-          </h1>
-          <p className="text-[13px] text-[#667085]">
-            Connect lead sources, messaging providers, calendars, and webhooks (Simulated in frontend demo)
-          </p>
-        </div>
+        <PageHeader
+          title="Integrations"
+          description="Connect lead sources, messaging providers, calendars, and webhooks (Simulated)"
+        />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <Card className="divide-y divide-[#E4E4E7]">
           {integrations.map((item) => (
-            <Card key={item.id} className="p-5 flex flex-col justify-between space-y-4">
-              <div>
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-[8px] bg-[#EFEDFF] text-[#635BFF]">
-                    <Plug className="h-5 w-5" />
-                  </div>
-                  <Switch
-                    checked={item.connected}
-                    onCheckedChange={() => {
-                      toggleIntegration(item.id);
-                      toast({
-                        title: item.connected
-                          ? `${item.name} disconnected`
-                          : `${item.name} connected (Simulated)`,
-                        variant: "info",
-                      });
-                    }}
-                  />
+            <div
+              key={item.id}
+              className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-5 py-4 hover:bg-[#F7F7F8] transition-colors"
+            >
+              <div className="flex items-start gap-3.5 min-w-0">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[6px] border border-[#E4E4E7] bg-[#F7F7F8] text-[#52525B]">
+                  <Plug className="h-4 w-4" />
                 </div>
-                <h3 className="mt-3 text-[15px] font-semibold text-[#101828]">
-                  {item.name}
-                </h3>
-                <p className="text-[12px] text-[#667085] mt-1">{item.description}</p>
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="text-[14px] font-semibold text-[#18181B]">
+                      {item.name}
+                    </p>
+                    <span className="text-[11px] text-[#A1A1AA]">
+                      {item.category}
+                    </span>
+                  </div>
+                  <p className="text-[12px] text-[#71717A] mt-0.5">
+                    {item.description}
+                  </p>
+                </div>
               </div>
 
-              <div className="pt-3 border-t border-[#E4E7EC] flex items-center justify-between text-[12px]">
-                <Badge variant={item.connected ? "success" : "default"}>
-                  {item.statusLabel}
-                </Badge>
-                <span className="text-[#98A2B3]">{item.category}</span>
+              <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+                <StatusIndicator
+                  color={item.connected ? "#16A34A" : "#71717A"}
+                  label={item.statusLabel}
+                />
+                <Switch
+                  checked={item.connected}
+                  onCheckedChange={() => {
+                    toggleIntegration(item.id);
+                    toast({
+                      title: item.connected
+                        ? `${item.name} disconnected`
+                        : `${item.name} connected (Simulated)`,
+                      variant: "info",
+                    });
+                  }}
+                />
               </div>
-            </Card>
+            </div>
           ))}
-        </div>
+        </Card>
       </div>
     </AppShell>
   );

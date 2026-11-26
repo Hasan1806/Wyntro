@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { UserPlus } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/ui/page-header";
+import { Avatar } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useCrmStore } from "@/store/useCrmStore";
-import { formatCurrency, getInitials } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 import { toast } from "@/components/ui/toast";
 
 export default function TeamPage() {
@@ -28,71 +30,62 @@ export default function TeamPage() {
   return (
     <AppShell>
       <div className="space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-[#101828]">
-              Team Management
-            </h1>
-            <p className="text-[13px] text-[#667085]">
-              Manage sales representatives, roles, routing availability, and quota attainment
-            </p>
-          </div>
-          <Button size="sm" onClick={() => setInviteOpen(true)}>
-            <UserPlus className="h-3.5 w-3.5" />
-            Invite Member
-          </Button>
-        </div>
+        <PageHeader
+          title="Team"
+          description="Manage sales representatives, roles, routing availability, and attainment"
+          actions={
+            <Button size="sm" onClick={() => setInviteOpen(true)}>
+              <UserPlus className="h-3.5 w-3.5" />
+              Invite Member
+            </Button>
+          }
+        />
 
-        <div className="rounded-[10px] border border-[#E4E7EC] bg-white overflow-x-auto">
+        <div className="rounded-[8px] border border-[#E4E4E7] bg-white overflow-x-auto">
           <table className="w-full text-left text-[13px]">
-            <thead className="border-b border-[#E4E7EC] bg-[#F8F9FC] text-[12px] font-medium text-[#667085]">
+            <thead className="h-10 border-b border-[#E4E4E7] bg-[#F7F7F8] text-[12px] font-medium text-[#52525B]">
               <tr>
-                <th className="px-4 py-3">Member</th>
-                <th className="px-4 py-3">Role</th>
-                <th className="px-4 py-3">Team</th>
-                <th className="px-4 py-3">Routing Availability</th>
-                <th className="px-4 py-3">Leads</th>
-                <th className="px-4 py-3">Deals Won</th>
-                <th className="px-4 py-3">Revenue Won</th>
+                <th className="px-4">Member</th>
+                <th className="px-4">Role</th>
+                <th className="px-4">Team</th>
+                <th className="px-4">Availability</th>
+                <th className="px-4 text-right">Leads</th>
+                <th className="px-4 text-right">Deals Won</th>
+                <th className="px-4 text-right">Revenue Won</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E4E7EC]">
+            <tbody className="divide-y divide-[#E4E4E7]">
               {team.map((m) => (
-                <tr key={m.id} className="hover:bg-[#F8F9FC]">
-                  <td className="px-4 py-3">
+                <tr key={m.id} className="h-12 hover:bg-[#F7F7F8]">
+                  <td className="px-4">
                     <div className="flex items-center gap-2.5">
-                      <div
-                        className="flex h-8 w-8 items-center justify-center rounded-full text-[11px] font-semibold text-white"
-                        style={{ backgroundColor: m.avatarColor }}
-                      >
-                        {getInitials(m.name)}
-                      </div>
+                      <Avatar name={m.name} color={m.avatarColor} size="md" />
                       <div>
-                        <p className="font-medium text-[#101828]">{m.name}</p>
-                        <p className="text-[11px] text-[#667085]">{m.email}</p>
+                        <p className="font-medium text-[#18181B]">{m.name}</p>
+                        <p className="text-[12px] text-[#71717A]">{m.email}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4">
                     <Badge variant={m.role === "Admin" ? "primary" : "outline"}>
                       {m.role}
                     </Badge>
                   </td>
-                  <td className="px-4 py-3 text-[#344054]">{m.team}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 text-[#52525B]">{m.team}</td>
+                  <td className="px-4">
                     <div className="flex items-center gap-2">
                       <Switch
                         checked={m.available}
                         onCheckedChange={() => toggleTeamAvailability(m.id)}
                       />
-                      <span className="text-[12px] text-[#667085]">
+                      <span className="text-[12px] text-[#71717A]">
                         {m.available ? "Available" : "Away"}
                       </span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 tabular-nums">{m.leadsAssigned}</td>
-                  <td className="px-4 py-3 tabular-nums">{m.dealsWon}</td>
-                  <td className="px-4 py-3 font-semibold tabular-nums">
+                  <td className="px-4 text-right tabular-nums">{m.leadsAssigned}</td>
+                  <td className="px-4 text-right tabular-nums">{m.dealsWon}</td>
+                  <td className="px-4 text-right font-semibold tabular-nums">
                     {formatCurrency(m.revenueWon)}
                   </td>
                 </tr>
@@ -103,7 +96,7 @@ export default function TeamPage() {
       </div>
 
       <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-[460px]">
           <DialogHeader>
             <DialogTitle>Invite Team Member (Demo)</DialogTitle>
           </DialogHeader>
@@ -145,7 +138,7 @@ export default function TeamPage() {
                 onChange={(e) =>
                   setRole(e.target.value as "Admin" | "Sales Manager" | "Sales Rep")
                 }
-                className="h-9 rounded-[8px] border border-[#E4E7EC] px-2.5 text-[12px]"
+                className="h-[38px] rounded-[6px] border border-[#E4E4E7] px-2.5 text-[12px]"
               >
                 <option value="Sales Rep">Sales Rep</option>
                 <option value="Sales Manager">Sales Manager</option>
