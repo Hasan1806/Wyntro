@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "motion/react";
 import {
   ArrowRight,
@@ -392,35 +393,48 @@ export function HomepageShowcase() {
           </motion.div>
         </section>
 
-        {/* 3. SPEED-TO-LEAD LIFECYCLE SECTION */}
-        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-20 lg:py-28">
-          <motion.div
-            {...revealProps}
-            className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
-          >
-            <div className="lg:col-span-5 space-y-5">
-              <p className="text-[13px] font-semibold uppercase tracking-wider text-[#635BFF]">
-                End-to-End Velocity
-              </p>
-              <h2 className="text-[32px] sm:text-[38px] font-semibold tracking-[-0.025em] leading-[1.12] text-[#18181B]">
-                From first click to closed-won, without losing context.
-              </h2>
-              <p className="text-[16px] sm:text-[17px] text-[#52525B] leading-[1.6]">
-                Every lead captured through your custom forms or ad channels is
-                instantly scored, routed to the right representative, and
-                enrolled into structured follow-up sequences.
-              </p>
-              <div className="pt-2 flex flex-wrap items-center gap-3">
-                <Button size="lg" asChild>
+        {/* 3. SPEED-TO-LEAD LIFECYCLE & MOBILE SHOWCASE SECTION */}
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-16 sm:py-20 lg:py-28">
+          <motion.div {...revealProps} className="space-y-10 sm:space-y-12">
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+              <div className="space-y-3 max-w-2xl">
+                <p className="text-[12px] sm:text-[13px] font-semibold uppercase tracking-wider text-[#635BFF]">
+                  End-to-End Velocity
+                </p>
+                <h2 className="text-[28px] sm:text-[38px] lg:text-[42px] font-semibold tracking-[-0.025em] leading-[1.12] text-[#18181B]">
+                  From first click to closed-won, without losing context.
+                </h2>
+                <p className="text-[15px] sm:text-[17px] text-[#52525B] leading-[1.6]">
+                  Every lead captured through your custom forms or ad channels is
+                  instantly scored, routed to the right representative, and
+                  enrolled into structured follow-up sequences.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 shrink-0">
+                <Button size="lg" asChild className="w-full sm:w-auto">
                   <Link href="/forms">Try Lead Form Builder →</Link>
                 </Button>
-                <Button size="lg" variant="secondary" asChild>
+                <Button size="lg" variant="secondary" asChild className="w-full sm:w-auto">
                   <Link href="/lead-distribution">View Routing Rules</Link>
                 </Button>
               </div>
             </div>
 
-            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Framed Visual Product Showcase */}
+            <div className="rounded-[14px] sm:rounded-[18px] border border-[#E4E4E7] bg-[#EFEDFF]/50 p-1.5 sm:p-3 shadow-[0_20px_50px_-15px_rgba(99,91,255,0.14)] overflow-hidden">
+              <Image
+                src="/images/wyntro-mobile-showcase.jpg"
+                alt="Wyntro lead capture, automated follow-up sequence, mobile client profile, and activity timeline"
+                width={1024}
+                height={476}
+                sizes="(max-width: 768px) 100vw, 1200px"
+                className="w-full h-auto rounded-[10px] sm:rounded-[12px] object-cover"
+              />
+            </div>
+
+            {/* 4-Step Lifecycle Strip */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
                 {
                   step: "01",
