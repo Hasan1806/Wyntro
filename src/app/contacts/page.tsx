@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, MessageCircle } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/ui/page-header";
 import { Avatar, EmptyState, StatusIndicator } from "@/components/ui/primitives";
 import { Input } from "@/components/ui/input";
 import { useCrmStore } from "@/store/useCrmStore";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, getWhatsAppUrl } from "@/lib/utils";
 
 export default function ContactsPage() {
   const { leads, team, pipelines } = useCrmStore();
@@ -92,7 +92,19 @@ export default function ContactsPage() {
                           {contact.email}
                         </td>
                         <td className="px-4 text-[#52525B] tabular-nums whitespace-nowrap">
-                          {contact.phone}
+                          <div className="inline-flex items-center gap-2">
+                            <span>{contact.phone}</span>
+                            <a
+                              href={getWhatsAppUrl(contact.phone, `Hi ${contact.name},`)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex h-6 w-6 items-center justify-center rounded-[5px] text-[#16A34A] hover:bg-[#F0FDF4]"
+                              title={`Message ${contact.name} on WhatsApp`}
+                              aria-label={`WhatsApp ${contact.name}`}
+                            >
+                              <MessageCircle className="h-3.5 w-3.5" />
+                            </a>
+                          </div>
                         </td>
                         <td className="px-4">
                           <StatusIndicator

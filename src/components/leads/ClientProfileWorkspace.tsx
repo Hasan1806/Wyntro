@@ -19,7 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input, Textarea } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useCrmStore } from "@/store/useCrmStore";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, openWhatsApp } from "@/lib/utils";
 import { toast } from "@/components/ui/toast";
 
 export function ClientProfileWorkspace({ id }: { id: string }) {
@@ -192,9 +192,15 @@ export function ClientProfileWorkspace({ id }: { id: string }) {
                 variant="secondary"
                 size="sm"
                 className="flex-col h-12 px-1 text-[11px]"
-                onClick={() => setSimChannel("whatsapp")}
+                onClick={() => {
+                  setSimChannel("whatsapp");
+                  openWhatsApp(
+                    lead.phone,
+                    `Hi ${lead.name}, this is ${actor.name} from Wyntro.`
+                  );
+                }}
               >
-                <MessageSquare className="h-3.5 w-3.5 text-[#52525B]" />
+                <MessageSquare className="h-3.5 w-3.5 text-[#16A34A]" />
                 WhatsApp
               </Button>
               <Button
@@ -340,7 +346,17 @@ export function ClientProfileWorkspace({ id }: { id: string }) {
                     onChange={(e) => setSimMessage(e.target.value)}
                     placeholder={`Compose a simulated ${simChannel} message to ${lead.name}...`}
                   />
-                  <div className="flex justify-end">
+                  <div className="flex justify-end gap-2">
+                    {simChannel === "whatsapp" && (
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => openWhatsApp(lead.phone, simMessage.trim() || undefined)}
+                      >
+                        Open WhatsApp
+                      </Button>
+                    )}
                     <Button type="submit" size="sm">
                       Log Simulated {simChannel.toUpperCase()}
                     </Button>

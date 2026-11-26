@@ -34,6 +34,18 @@ export function nextDayIso(): string {
   return new Date(Date.now() + 86400000).toISOString();
 }
 
+export function getWhatsAppUrl(phone: string, text?: string): string {
+  const digits = phone.replace(/[^\d]/g, "");
+  const base = `https://api.whatsapp.com/send?phone=${digits}`;
+  return text ? `${base}&text=${encodeURIComponent(text)}` : base;
+}
+
+export function openWhatsApp(phone: string, text?: string): void {
+  if (typeof window === "undefined") return;
+  const url = getWhatsAppUrl(phone, text);
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
 export function exportToCsv<T extends Record<string, unknown>>(
   filename: string,
   rows: T[],

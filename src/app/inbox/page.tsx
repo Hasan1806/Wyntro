@@ -9,6 +9,7 @@ import {
   FileText,
   Lock,
   ExternalLink,
+  MessageCircle,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/ui/page-header";
@@ -16,7 +17,7 @@ import { Avatar, PropertyRow } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
 import { Input, Textarea } from "@/components/ui/input";
 import { useCrmStore } from "@/store/useCrmStore";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, getWhatsAppUrl, openWhatsApp } from "@/lib/utils";
 import { toast } from "@/components/ui/toast";
 import type { MessageChannel } from "@/types/crm";
 
@@ -360,10 +361,25 @@ export default function InboxPage() {
                     <span className="text-[11px] text-[#A1A1AA]">
                       Demo composer · Delivery states are simulated
                     </span>
-                    <Button type="submit" size="sm">
-                      <Send className="h-3.5 w-3.5" />
-                      {composerMode === "internal" ? "Add Note" : "Send (Demo)"}
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      {composerMode === "whatsapp" && activeLead && (
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          onClick={() =>
+                            openWhatsApp(activeLead.phone, draft.trim() || undefined)
+                          }
+                        >
+                          <MessageCircle className="h-3.5 w-3.5 text-[#16A34A]" />
+                          Open WhatsApp
+                        </Button>
+                      )}
+                      <Button type="submit" size="sm">
+                        <Send className="h-3.5 w-3.5" />
+                        {composerMode === "internal" ? "Add Note" : "Send (Demo)"}
+                      </Button>
+                    </div>
                   </div>
                 </form>
               </>
@@ -411,6 +427,21 @@ export default function InboxPage() {
                   <p className="text-[12px] font-semibold text-[#18181B]">
                     Quick Follow-up
                   </p>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="w-full"
+                    asChild
+                  >
+                    <a
+                      href={getWhatsAppUrl(activeLead.phone, `Hi ${activeLead.name},`)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <MessageCircle className="h-3.5 w-3.5 text-[#16A34A]" />
+                      Chat on WhatsApp
+                    </a>
+                  </Button>
                   <Button
                     variant="secondary"
                     size="sm"

@@ -21,6 +21,7 @@ import {
   Search,
   GripVertical,
   Pencil,
+  MessageCircle,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/ui/page-header";
@@ -36,7 +37,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useCrmStore } from "@/store/useCrmStore";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, getWhatsAppUrl } from "@/lib/utils";
 import { toast } from "@/components/ui/toast";
 import type { Lead, PipelineStage } from "@/types/crm";
 
@@ -104,7 +105,19 @@ function OpportunityCard({
       </div>
 
       <div className="mt-2.5 pt-2 border-t border-[#E4E4E7] flex items-center justify-between text-[11px] text-[#71717A]">
-        <span className="truncate">{lead.source}</span>
+        <div className="flex items-center gap-1.5 min-w-0">
+          <a
+            href={getWhatsAppUrl(lead.phone, `Hi ${lead.name},`)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#16A34A] hover:opacity-80 shrink-0"
+            title={`WhatsApp ${lead.name}`}
+            aria-label={`WhatsApp ${lead.name}`}
+          >
+            <MessageCircle className="h-3.5 w-3.5" />
+          </a>
+          <span className="truncate">{lead.source}</span>
+        </div>
         <div className="flex items-center gap-1.5 shrink-0">
           <Avatar name={repName} color={repColor} size="sm" className="h-5 w-5 text-[9px]" />
           <span className="truncate max-w-[84px]">{repName}</span>

@@ -23,6 +23,7 @@ import {
   X,
   Eye,
   MoreHorizontal,
+  MessageCircle,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/ui/page-header";
@@ -40,7 +41,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useCrmStore } from "@/store/useCrmStore";
-import { exportToCsv, formatCurrency } from "@/lib/utils";
+import { exportToCsv, formatCurrency, getWhatsAppUrl } from "@/lib/utils";
 import { toast } from "@/components/ui/toast";
 import type { Lead } from "@/types/crm";
 
@@ -302,14 +303,29 @@ export default function LeadsPage() {
         id: "actions",
         header: "",
         cell: ({ row }) => (
-          <Link
-            href={`/leads/${row.original.id}`}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-[6px] text-[#71717A] hover:bg-[#F4F4F5] hover:text-[#18181B]"
-            title="Open Lead Profile"
-            aria-label={`Open ${row.original.name}`}
-          >
-            <MoreHorizontal className="h-4 w-4" />
-          </Link>
+          <div className="flex items-center justify-end gap-1">
+            <a
+              href={getWhatsAppUrl(
+                row.original.phone,
+                `Hi ${row.original.name}, following up from Wyntro.`
+              )}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-[6px] text-[#16A34A] hover:bg-[#F0FDF4]"
+              title={`Chat with ${row.original.name} on WhatsApp`}
+              aria-label={`WhatsApp ${row.original.name}`}
+            >
+              <MessageCircle className="h-4 w-4" />
+            </a>
+            <Link
+              href={`/leads/${row.original.id}`}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-[6px] text-[#71717A] hover:bg-[#F4F4F5] hover:text-[#18181B]"
+              title="Open Lead Profile"
+              aria-label={`Open ${row.original.name}`}
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </Link>
+          </div>
         ),
         enableSorting: false,
         enableHiding: false,
